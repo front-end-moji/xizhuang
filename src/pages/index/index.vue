@@ -1,5 +1,8 @@
 <template>
   <view class="content">
+    <uni-section title="一般用法" type="line" padding>
+			<uni-countdown :day="1" :hour="1" :minute="12" :second="40" />
+		</uni-section>
     <image class="logo" src="/static/logo.png"></image>
     <view class="text-area">
       <text class="title">{{ title }}</text>
@@ -11,12 +14,12 @@
 export default {
   data() {
     return {
-      title: 'Hello11233321111',
-    }
+      title: "Hello112344111",
+    };
   },
   onLoad() {},
   methods: {},
-}
+};
 </script>
 
 <style>
