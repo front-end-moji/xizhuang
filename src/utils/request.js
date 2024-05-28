@@ -26,7 +26,7 @@ export default class Request {
       method = method.toUpperCase(); //小写改为大写
       if (method == "POST") {
         header = {
-          "content-type": "application/x-www-form-urlencoded",
+          "content-type": "application/json",
         };
       } else {
         if (method === "GET") {

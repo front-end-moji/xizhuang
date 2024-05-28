@@ -5,6 +5,7 @@
         v-for="item in tabList"
         :key="item"
         class="headerItem"
+        :class="{ active: true }"
         @click="onTabClick(item)"
       >
         <view v-if="activeTab === item" class="headerItem active"
@@ -43,19 +44,13 @@
 
 <script lang="js">
 import postItem from "./postItem.vue";
+import { TOPIC_LIST } from './constant'
 
 export default {
   data() {
     return {
       activeTab: "全部话题",
-      tabList: [
-        "全部话题",
-        "求助打听",
-        "交友捞人",
-        "生活分享",
-        "兼职招募",
-        "其他话题",
-      ],
+      tabList: TOPIC_LIST,
     };
   },
   components: {postItem},
