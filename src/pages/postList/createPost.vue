@@ -127,7 +127,7 @@ export default {
 }
 
 .left {
-  color: green;
+  color: #5dc588;
 }
 
 .right {
@@ -147,12 +147,12 @@ export default {
   background: #e1e1e1;
   border-radius: 10px;
   padding: 3px 12px;
-  margin: 20px 0;
+  margin: 12px 0;
   color: #7b7b7b;
 }
 
 .symbol {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   color: #5dc588;
 }

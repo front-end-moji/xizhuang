@@ -15,14 +15,23 @@
       </view>
     </view>
 
-    <uni-badge></uni-badge>
-
     <view class="scrollWrap">
       <view class="scope">
-        <view class="left">仅看本校</view>
+        <view
+          class="left"
+          :class="{ active: viewRange === 'ONLY' }"
+          @click="changeViewRange"
+          >仅看本校</view
+        >
         <view class="right">
-          <text>最新</text>
-          <text>热门</text>
+          <text
+            class="right-item"
+            :class="{ active: item === viewType }"
+            :key="item"
+            v-for="item in viewTypes"
+            @click="changeViewType(item)"
+            >{{ item }}</text
+          >
         </view>
       </view>
 
@@ -49,8 +58,11 @@ import { TOPIC_LIST } from './constant'
 export default {
   data() {
     return {
+      viewTypes: ['最新', '热门'],
       activeTab: "全部话题",
       tabList: TOPIC_LIST,
+      viewRange: 'ALL', // ALL or ONLY
+      viewType: '最新', // LATEST or HOT
     };
   },
   components: {postItem},
@@ -69,6 +81,12 @@ export default {
         url: "/pages/postList/createPost",
       });
     },
+    changeViewRange() {
+      this.viewRange = this.viewRange === 'ALL' ? 'ONLY' : 'ALL'
+    },
+    changeViewType(viewType) {
+      this.viewType = viewType
+    }
   },
 };
 </script>
@@ -76,7 +94,6 @@ export default {
 <style scoped>
 .wrap {
   width: 100vw;
-  border: 1px solid red;
   display: flex;
   height: 100vh;
   overflow: hidden;
@@ -89,7 +106,7 @@ export default {
   display: flex;
   width: 100%;
   overflow-x: auto;
-  height: 30px;
+  height: 40px;
   align-items: center;
   padding: 0 8px;
 }
@@ -99,17 +116,42 @@ export default {
   font-size: 14px;
   font-weight: 400;
   padding: 0 4px;
-  color: #e1e1e1;
+  color: #ccc;
 }
 
 .headerItem.active {
-  color: green;
+  color: #5dc588;
 }
 
 .scrollWrap {
-  border: 1px solid blue;
   height: calc(100vh - 30px - 52px);
   overflow-y: auto;
+  border: 1px solid red;
+}
+
+.left {
+  border: 1px solid #ccc;
+  padding: 2px 4px;
+}
+
+.right {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.right-item {
+  padding: 2px 6px;
+}
+
+.right-item.active {
+  background: #5dc588;
+  color: white;
+}
+
+.left.active {
+  background: #5dc588;
+  color: white;
 }
 
 .scope {
@@ -119,7 +161,6 @@ export default {
   font-size: 12px;
   height: 30px;
   align-items: center;
-  border: 1px solid red;
 }
 
 .slider {
