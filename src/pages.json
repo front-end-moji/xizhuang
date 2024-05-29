@@ -36,10 +36,16 @@
         "navigationBarTitleText": "新建话题"
       }
     },
+		{
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
     {
       "path": "pages/mine/index",
       "style": {
-        "navigationBarTitleText": "uni-app"
+        "navigationBarTitleText": "个人中心"
       }
     }
   ],
@@ -60,8 +66,8 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "iconPath": "static/mine.png",
-        "selectedIconPath": "static/mineSelected.png",
+        "iconPath": "static/home.png",
+        "selectedIconPath": "static/homeSelected.png",
         "text": "首页"
       },
       {
@@ -79,3 +85,4 @@
     ]
   }
 }
+wqc
