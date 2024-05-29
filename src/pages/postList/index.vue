@@ -5,6 +5,7 @@
         v-for="item in tabList"
         :key="item"
         class="headerItem"
+        :class="{ active: true }"
         @click="onTabClick(item)"
       >
         <view v-if="activeTab === item" class="headerItem active"
@@ -14,47 +15,83 @@
       </view>
     </view>
 
-    <uni-badge></uni-badge>
-
     <view class="scrollWrap">
       <view class="scope">
-        <view class="left">仅看本校</view>
+        <view
+          class="left"
+          :class="{ active: viewRange === 'ONLY' }"
+          @click="changeViewRange"
+          >仅看本校</view
+        >
         <view class="right">
-          <text>最新</text>
-          <text>热门</text>
+          <text
+            class="right-item"
+            :class="{ active: item === viewType }"
+            :key="item"
+            v-for="item in viewTypes"
+            @click="changeViewType(item)"
+            >{{ item }}</text
+          >
         </view>
       </view>
 
-      <view class="slider">xxx</view>
+      <view class="uni-margin-wrap">
+        <view class="recommend">推荐</view>
+        <swiper
+          class="swiper"
+          circular
+          :autoplay="autoplay"
+          :interval="interval"
+          :duration="duration"
+          vertical
+        >
+          <swiper-item v-for="item in textList" :key="item">
+            <view class="swiper-item">
+              <view class="swiper-text">
+                {{ item }}
+              </view>
+              <text>></text>
+            </view>
+          </swiper-item>
+        </swiper>
+      </view>
 
       <view class="postWrap">
-        <post-item></post-item>
-        <post-item></post-item>
-        <post-item></post-item>
         <post-item></post-item>
       </view>
     </view>
 
     <view class="footer">
-      <text class="newPost" @click="this.navToCreatePost">新建</text>
+      <view class="newPost" @click="this.navToCreatePost">
+        <uni-icons type="plusempty" size="20" color="#ffffff"></uni-icons>
+        <text class="publish-text">我要发布</text>
+      </view>
     </view>
   </view>
 </template>
 
 <script lang="js">
 import postItem from "./postItem.vue";
+import { TOPIC_LIST } from './constant'
 
 export default {
   data() {
     return {
+      viewTypes: ['最新', '热门'],
       activeTab: "全部话题",
-      tabList: [
-        "全部话题",
-        "求助打听",
-        "交友捞人",
-        "生活分享",
-        "兼职招募",
-        "其他话题",
+      tabList: TOPIC_LIST,
+      viewRange: 'ALL', // ALL or ONLY
+      viewType: '最新', // LATEST or HOT
+      background: ['color1', 'color2', 'color3'],
+      indicatorDots: true,
+      autoplay: true,
+      interval: 2000,
+      duration: 500,
+      textList: [
+        '喜欢上别人的女朋友怎么办？',
+        '如果你对象变成一只蟑螂，你会怎么办',
+        '投稿',
+        '冒泡',
       ],
     };
   },
@@ -74,6 +111,12 @@ export default {
         url: "/pages/postList/createPost",
       });
     },
+    changeViewRange() {
+      this.viewRange = this.viewRange === 'ALL' ? 'ONLY' : 'ALL'
+    },
+    changeViewType(viewType) {
+      this.viewType = viewType
+    }
   },
 };
 </script>
@@ -81,7 +124,6 @@ export default {
 <style scoped>
 .wrap {
   width: 100vw;
-  border: 1px solid red;
   display: flex;
   height: 100vh;
   overflow: hidden;
@@ -94,9 +136,9 @@ export default {
   display: flex;
   width: 100%;
   overflow-x: auto;
-  height: 30px;
+  height: 40px;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 12px;
 }
 
 .headerItem {
@@ -104,37 +146,51 @@ export default {
   font-size: 14px;
   font-weight: 400;
   padding: 0 4px;
-  color: #e1e1e1;
+  color: #ccc;
 }
 
 .headerItem.active {
-  color: green;
+  color: #5dc588;
 }
 
 .scrollWrap {
-  border: 1px solid blue;
   height: calc(100vh - 30px - 52px);
   overflow-y: auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.left {
+  border: 1px solid #ccc;
+  padding: 2px 4px;
+}
+
+.right {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.right-item {
+  padding: 2px 6px;
+}
+
+.right-item.active {
+  background: #5dc588;
+  color: white;
+}
+
+.left.active {
+  background: #5dc588;
+  color: white;
 }
 
 .scope {
   display: flex;
   justify-content: space-between;
-  padding: 0 12px;
   font-size: 12px;
   height: 30px;
   align-items: center;
-  border: 1px solid red;
-}
-
-.slider {
-  height: 30px;
-  margin: 0 12px;
-  background: orange;
-}
-
-.postWrap {
-  padding: 0 12px;
 }
 
 .footer {
@@ -142,5 +198,63 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  border-top: 1px solid #ccc;
+}
+
+.uni-margin-wrap {
+  width: 100%;
+  display: flex;
+  margin-top: 8px;
+  background: #fcf1e9;
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+.recommend {
+  width: 30px;
+  font-size: 12px;
+  padding-left: 8px;
+  height: 24px;
+  line-height: 24px;
+}
+.swiper {
+  height: 24px;
+  width: calc(100% - 30px);
+}
+.swiper-item {
+  font-size: 12px;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.swiper-text {
+  display: block;
+  word-break: keep-all;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: calc(100% - 20px);
+}
+
+.newPost {
+  background: #5dc588;
+  border: 1px solid black;
+  padding: 4px 6px;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  margin-top: -50px;
+  position: relative;
+}
+
+.publish-text {
+  position: absolute;
+  bottom: -20px;
+  width: 50px;
+  text-align: center;
+  left: calc(50% - 25px);
+  font-size: 12px;
+  color: black;
 }
 </style>

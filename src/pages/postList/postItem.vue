@@ -1,48 +1,104 @@
 <template>
   <view class="postItem">
     <view class="postHeader">
-      <view class="avatar">xxx</view>
+      <avatar></avatar>
       <view class="info">
-        <text class="name">Ohh.</text>
+        <text class="name">章鱼不太懒</text>
         <view class="detailInfo">
-          <text class="date">xxx</text>
-          <text class="position">黑龙江xxxxx</text>
+          <text class="date">14个小时前</text>
+          <view class="position">
+            <uni-icons type="location" size="16"></uni-icons>黑龙江大学</view
+          >
         </view>
       </view>
 
       <view class="postTopic">其他话题</view>
     </view>
     <view class="textWrapper">
-      <input id="exp1" class="exp" type="checkbox" ref="inputBtn" />
-      <view class="text">
-        <text class="btn" for="exp1" @click="inputClick"></text>
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
+      <view class="text" id="xxx" :class="{ expand: needExpand & !hasExpand }">
+        晒一下小狗狗把
       </view>
     </view>
+    <view class="expandBtn" v-if="needExpand" @click="onExpand"
+      >{{ hasExpand ? "收起" : "展开" }}
+    </view>
+
     <view class="imgList">
-      <view class="imgItem"></view>
-      <view class="imgItem"></view>
-      <view class="imgItem"></view>
+      <view
+        class="imgItem"
+        v-for="(item, index) in images.slice(0, 3)"
+        :key="item"
+      >
+        <img
+          class="img"
+          :src="item"
+          mode="widthFit"
+          @tap="previewImage(index)"
+        />
+        <view class="mask" v-if="index === 2">+{{ images.length - 3 }}</view>
+      </view>
     </view>
   </view>
 </template>
 
 <script>
+import { Avatar } from "../../components/avatar.vue";
+
 export default {
   name: "postItem",
   data() {
-    return {};
+    return {
+      images: [
+        "https://www.southernliving.com/thmb/FlPNHGSV-VVRaR3ZZCbkAi4Vn9k=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/gettyimages-114166947-1-268128f97e5c415baede328c1fe32f55.jpg",
+        "https://www.hartz.com/wp-content/uploads/2022/04/small-dog-owners-1.jpg",
+        "https://i.pinimg.com/736x/54/36/95/54369563e20e94dcab5fc7f40cf7e8d6.jpg",
+        "https://www.princeton.edu/sites/default/files/styles/scale_1440/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=lA8UuoHt",
+      ],
+      needExpand: false,
+      hasExpand: false,
+    };
   },
+  props: {
+    postInfo: {},
+  },
+  components: { Avatar },
   onLoad: function (option) {},
+  mounted() {
+    const query = uni.createSelectorQuery().in(this);
+    query
+      .select("#xxx")
+      .boundingClientRect((data) => {
+        const { height } = data;
+        if (!height) {
+          return;
+        }
+        if (height > 60) {
+          console.log(
+            "%c [ 111 ]-54",
+            "font-size:13px; background:pink; color:#bf2c9f;"
+          );
+          this.needExpand = true;
+        }
+      })
+      .exec();
+  },
   methods: {
     onTabClick(item) {
       this.activeTab = item;
     },
-    inputClick() {
-      this.$refs.inputBtn.click();
+    onExpand() {
+      this.hasExpand = !this.hasExpand;
+    },
+    previewImage(index) {
+      console.log(
+        "%c [ index ]-96",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        index
+      );
+      uni.previewImage({
+        urls: this.images,
+        current: this.images[index],
+      });
     },
   },
 };
@@ -67,20 +123,23 @@ export default {
   position: relative;
 }
 
-.avatar {
-  height: 40px;
-  width: 40px;
-  border-radius: 50%;
-  border: 1px solid #ccc;
-  background: blue;
-  margin-right: 8px;
-}
-
 .postTopic {
   position: absolute;
   right: 0;
   top: 12px;
-  color: green;
+  color: #5dc588;
+  background: #eee;
+  padding: 2px 12px;
+  border-radius: 10px;
+}
+
+.info {
+  margin-left: 8px;
+}
+
+.detailInfo {
+  display: flex;
+  align-items: center;
 }
 
 .name {
@@ -88,8 +147,10 @@ export default {
   font-weight: 600;
 }
 
-.date {
-  margin-right: 8px;
+.date,
+.position {
+  margin-right: 12px;
+  color: #ccc;
 }
 
 .contentText {
@@ -105,73 +166,70 @@ export default {
   display: flex;
   overflow: hidden;
   border-radius: 8px;
-  padding-left: 40px;
+  padding-left: 52px;
 }
+
+.expandBtn {
+  background: #ccc;
+  border-radius: 2px;
+  margin-top: 4px;
+  padding: 2px 0;
+  width: 40px;
+  text-align: center;
+  margin-left: 52px;
+  color: #5dc588;
+}
+
 .text {
-  font-size: 20px;
-  overflow: hidden;
+  font-size: 14px;
   text-overflow: ellipsis;
   text-align: justify;
-  /* display: flex; */
+  position: relative;
+}
+
+.text.expand {
+  display: flex;
+  overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  position: relative;
-}
-.text::before {
-  content: "";
-  height: calc(100% - 24px);
-  float: right;
-}
-.text::after {
-  content: "";
-  width: 999vw;
-  height: 999vw;
-  position: absolute;
-  box-shadow: inset calc(100px - 999vw) calc(30px - 999vw) 0 0 #fff;
-  margin-left: -100px;
-}
-.btn {
-  float: right;
-  clear: both;
-  margin-left: 10px;
-  font-size: 16px;
-  padding: 0 8px;
-  background: #3f51b5;
-  line-height: 24px;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  /* margin-top: -30px; */
-}
-.btn::before {
-  content: "展开";
-}
-.exp {
-  display: none;
-}
-.exp:checked + .text {
-  -webkit-line-clamp: 999;
-}
-.exp:checked + .text::after {
-  visibility: hidden;
-}
-.exp:checked + .text .btn::before {
-  content: "收起";
 }
 
 .imgList {
-  height: 60px;
   display: flex;
   align-items: center;
-  padding-left: 40px;
+  padding-left: 52px;
+  margin-top: 8px;
+  overflow-x: hidden;
+  justify-content: space-between;
 }
 
 .imgItem {
-  height: 80px;
-  width: 80px;
+  flex-shrink: 0;
   border-radius: 4px;
-  margin-right: 8px;
-  background: red;
+  width: 30%;
+  height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+.imgItem .img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 14;
 }
 </style>
