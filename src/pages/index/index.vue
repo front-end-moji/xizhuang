@@ -128,7 +128,6 @@ export default {
 }
 
 .serviceListWrap {
-  background: #eee;
   margin-bottom: 12px;
   display: flex;
   padding: 8px 0;
