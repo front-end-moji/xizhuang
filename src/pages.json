@@ -43,6 +43,12 @@
       }
     },
     {
+      "path": "pages/postList/details",
+      "style": {
+        "navigationBarTitleText": "话题详情"
+      }
+    },
+    {
       "path": "pages/mine/index",
       "style": {
         "navigationBarTitleText": "个人中心"

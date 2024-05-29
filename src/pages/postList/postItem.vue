@@ -14,28 +14,58 @@
 
       <view class="postTopic">其他话题</view>
     </view>
-    <view class="textWrapper">
-      <view class="text" id="xxx" :class="{ expand: needExpand & !hasExpand }">
-        晒一下小狗狗把
-      </view>
-    </view>
-    <view class="expandBtn" v-if="needExpand" @click="onExpand"
-      >{{ hasExpand ? "收起" : "展开" }}
-    </view>
 
-    <view class="imgList">
-      <view
-        class="imgItem"
-        v-for="(item, index) in images.slice(0, 3)"
-        :key="item"
-      >
-        <img
-          class="img"
-          :src="item"
-          mode="widthFit"
-          @tap="previewImage(index)"
-        />
-        <view class="mask" v-if="index === 2">+{{ images.length - 3 }}</view>
+    <view class="post-content" :class="{ isDetail: isDetail }">
+      <view class="textWrapper">
+        <view
+          class="text"
+          id="xxx"
+          :class="{ expand: needExpand & !hasExpand }"
+        >
+          晒一下小狗狗把
+        </view>
+      </view>
+
+      <view class="expandBtn" v-if="needExpand" @click="onExpand"
+        >{{ hasExpand ? "收起" : "展开" }}
+      </view>
+
+      <view class="imgList">
+        <view
+          class="imgItem"
+          v-for="(item, index) in images.slice(0, 3)"
+          :key="item"
+        >
+          <img
+            class="img"
+            :src="item"
+            mode="widthFit"
+            @tap="previewImage(index)"
+          />
+          <view class="mask" v-if="index === 2">+{{ images.length - 3 }}</view>
+        </view>
+      </view>
+
+      <view class="actions">
+        <view class="action-left">
+          <text class="watching">8人围观</text>
+        </view>
+        <view class="action-btns">
+          <uni-icons
+            @click="navToPostDetail"
+            type="redo"
+            size="20"
+            color="#111111"
+          ></uni-icons>
+          <uni-icons
+            @click="navToPostDetail"
+            type="chat"
+            size="20"
+            color="#111111"
+            class="edit-icon"
+          ></uni-icons>
+          <uni-icons type="heart" size="20" color="#111111"></uni-icons>
+        </view>
       </view>
     </view>
   </view>
@@ -60,6 +90,10 @@ export default {
   },
   props: {
     postInfo: {},
+    isDetail: {
+      default: false,
+      type: Boolean,
+    },
   },
   components: { Avatar },
   onLoad: function (option) {},
@@ -73,10 +107,6 @@ export default {
           return;
         }
         if (height > 60) {
-          console.log(
-            "%c [ 111 ]-54",
-            "font-size:13px; background:pink; color:#bf2c9f;"
-          );
           this.needExpand = true;
         }
       })
@@ -90,14 +120,14 @@ export default {
       this.hasExpand = !this.hasExpand;
     },
     previewImage(index) {
-      console.log(
-        "%c [ index ]-96",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        index
-      );
       uni.previewImage({
         urls: this.images,
         current: this.images[index],
+      });
+    },
+    navToPostDetail: () => {
+      uni.navigateTo({
+        url: "/pages/postList/details",
       });
     },
   },
@@ -115,7 +145,7 @@ export default {
   font-size: 12px;
   justify-content: center;
   border-bottom: 1px solid #ccc;
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .postHeader {
@@ -153,6 +183,18 @@ export default {
   color: #ccc;
 }
 
+.post-content {
+  padding-left: 52px;
+}
+
+.post-content.isDetail {
+  padding-left: 0px;
+}
+
+.post-content.isDetail .textWrapper {
+  margin-top: 12px;
+}
+
 .contentText {
   padding-left: 40px;
   overflow: hidden;
@@ -166,7 +208,6 @@ export default {
   display: flex;
   overflow: hidden;
   border-radius: 8px;
-  padding-left: 52px;
 }
 
 .expandBtn {
@@ -176,7 +217,6 @@ export default {
   padding: 2px 0;
   width: 40px;
   text-align: center;
-  margin-left: 52px;
   color: #5dc588;
 }
 
@@ -198,7 +238,6 @@ export default {
 .imgList {
   display: flex;
   align-items: center;
-  padding-left: 52px;
   margin-top: 8px;
   overflow-x: hidden;
   justify-content: space-between;
@@ -231,5 +270,18 @@ export default {
   align-items: center;
   color: white;
   font-size: 14;
+}
+
+.actions {
+  padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.edit-icon {
+  margin: 0 6px;
 }
 </style>
