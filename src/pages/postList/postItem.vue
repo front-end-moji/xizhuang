@@ -1,10 +1,9 @@
 <template>
   <view class="postItem">
     <view class="postHeader">
-      <!-- <view class="avatar">xxx</view> -->
       <avatar></avatar>
       <view class="info">
-        <text class="name">Ohh.</text>
+        <text class="name">章鱼不太懒</text>
         <view class="detailInfo">
           <text class="date">14个小时前</text>
           <view class="position">
@@ -17,10 +16,7 @@
     </view>
     <view class="textWrapper">
       <view class="text" id="xxx" :class="{ expand: needExpand & !hasExpand }">
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
-        sfasdfasdfadsfasdfasdfadsfadsfasdfsdf
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
-        asfasdfasdfadsfasdfasdfadsfadsfasdfsdf
+        晒一下小狗狗把
       </view>
     </view>
     <view class="expandBtn" v-if="needExpand" @click="onExpand"
@@ -61,6 +57,9 @@ export default {
       needExpand: false,
       hasExpand: false,
     };
+  },
+  props: {
+    postInfo: {},
   },
   components: { Avatar },
   onLoad: function (option) {},

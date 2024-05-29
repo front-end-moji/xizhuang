@@ -5,42 +5,21 @@
         <input type="text" />
       </view>
 
-      <view class="swiperContainer">1</view>
+      <view class="swiperContainer">
+        <img src="../../static/banner.png" class="bannerImg" alt="" />
+      </view>
 
       <view class="serviceListWrap">
-        <view class="serviceItem">
-          <view @click="navToPostLit">
-            <view class="img"></view>
-            <text class="serviceText">贴吧</text>
+        <view
+          class="serviceItem"
+          v-for="item in navList"
+          :key="item.title"
+          @click="navToPostLit"
+        >
+          <view class="imgWrap">
+            <img :src="item.icon" alt="" class="navImg" />
           </view>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
-        </view>
-        <view class="serviceItem">
-          <view class="img"></view>
-          <text class="serviceText">美食</text>
+          <text class="serviceText">{{ item.title }}</text>
         </view>
       </view>
 
@@ -86,23 +65,19 @@
 
 <script>
 import { getPostList } from "@/api/home";
+import { NAV_LIST } from "./constant";
 
 export default {
   data() {
     return {
-      title: "Hello11233321111",
-      background: ["color1", "color2", "color3"],
+      navList: NAV_LIST,
       indicatorDots: true,
       autoplay: true,
       interval: 2000,
       duration: 500,
     };
   },
-  // components: [uniSearchBar],
   onLoad: function (option) {
-    //option为object类型，会序列化上个页面传递的参数
-    console.log(option.id); //打印出上个页面传递的参数。
-    console.log(option.name); //打印出上个页面传递的参数。
     getPostList({
       authorId: "111",
       isSearchLatestPost: 1,
@@ -110,20 +85,8 @@ export default {
       page: 1,
       visibility: "aaa",
     })
-      .then((data) => {
-        console.log(
-          "%c [ data ]-104",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          data
-        );
-      })
-      .catch((error) => {
-        console.log(
-          "%c [ error ]-110",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          error
-        );
-      });
+      .then((data) => {})
+      .catch((error) => {});
   },
   methods: {
     navToPostLit: () => {
@@ -162,16 +125,24 @@ export default {
 
 .swiperContainer {
   border-radius: 12px;
-  background: #a3bffa;
   height: 128px;
   margin-bottom: 12px;
+  border: 1px solid #ccc;
+  background: #92cc8a;
+}
+
+.swiperContainer .bannerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .serviceListWrap {
-  background: #fff;
+  background: #eee;
   margin-bottom: 12px;
-  padding: 8px 16px;
   display: flex;
+  padding: 8px 0;
+  border-radius: 8px;
   flex-wrap: wrap;
 }
 
@@ -184,12 +155,17 @@ export default {
   align-items: center;
 }
 
-.img {
+.imgWrap {
   width: 30px;
   height: 40px;
-  background: #92cc8a;
   border-radius: 12px;
   margin-bottom: 4px;
+}
+
+.navImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .serviceText {

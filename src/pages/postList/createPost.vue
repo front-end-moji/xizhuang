@@ -157,6 +157,10 @@ export default {
   color: #5dc588;
 }
 
+.uni-input {
+  font-size: 12px;
+}
+
 .nickname {
   display: flex;
   justify-content: space-between;

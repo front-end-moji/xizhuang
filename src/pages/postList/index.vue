@@ -58,9 +58,6 @@
 
       <view class="postWrap">
         <post-item></post-item>
-        <post-item></post-item>
-        <post-item></post-item>
-        <post-item></post-item>
       </view>
     </view>
 
@@ -91,10 +88,11 @@ export default {
       interval: 2000,
       duration: 500,
       textList: [
-        '范德萨发大水发生的发的说法的沙发大沙发打发点算法的算法111111111j',
-        '发的发生多发点所发生的发撒对哦份额及分内费你发额菲菲222222222222',
-        '3333fdsfkjsdlfjsdkfdjsf发的发生多发点所发生的发撒对哦份额及分内费你发额菲菲222222222222',
-      ]
+        '喜欢上别人的女朋友怎么办？',
+        '如果你对象变成一只蟑螂，你会怎么办',
+        '投稿',
+        '冒泡',
+      ],
     };
   },
   components: {postItem},
@@ -242,11 +240,11 @@ export default {
 .newPost {
   background: #5dc588;
   border: 1px solid black;
-  padding: 8px;
+  padding: 4px 6px;
   border-radius: 2px;
   display: flex;
   flex-direction: column;
-  margin-top: -40px;
+  margin-top: -50px;
   position: relative;
 }
 
