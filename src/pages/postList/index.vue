@@ -35,7 +35,26 @@
         </view>
       </view>
 
-      <view class="slider">xxx</view>
+      <view class="uni-margin-wrap">
+        <view class="recommend">推荐</view>
+        <swiper
+          class="swiper"
+          circular
+          :autoplay="autoplay"
+          :interval="interval"
+          :duration="duration"
+          vertical
+        >
+          <swiper-item v-for="item in textList" :key="item">
+            <view class="swiper-item">
+              <view class="swiper-text">
+                {{ item }}
+              </view>
+              <text>></text>
+            </view>
+          </swiper-item>
+        </swiper>
+      </view>
 
       <view class="postWrap">
         <post-item></post-item>
@@ -46,7 +65,10 @@
     </view>
 
     <view class="footer">
-      <text class="newPost" @click="this.navToCreatePost">新建</text>
+      <view class="newPost" @click="this.navToCreatePost">
+        <uni-icons type="plusempty" size="20" color="#ffffff"></uni-icons>
+        <text class="publish-text">我要发布</text>
+      </view>
     </view>
   </view>
 </template>
@@ -63,6 +85,16 @@ export default {
       tabList: TOPIC_LIST,
       viewRange: 'ALL', // ALL or ONLY
       viewType: '最新', // LATEST or HOT
+      background: ['color1', 'color2', 'color3'],
+      indicatorDots: true,
+      autoplay: true,
+      interval: 2000,
+      duration: 500,
+      textList: [
+        '范德萨发大水发生的发的说法的沙发大沙发打发点算法的算法111111111j',
+        '发的发生多发点所发生的发撒对哦份额及分内费你发额菲菲222222222222',
+        '3333fdsfkjsdlfjsdkfdjsf发的发生多发点所发生的发撒对哦份额及分内费你发额菲菲222222222222',
+      ]
     };
   },
   components: {postItem},
@@ -108,7 +140,7 @@ export default {
   overflow-x: auto;
   height: 40px;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 12px;
 }
 
 .headerItem {
@@ -126,7 +158,8 @@ export default {
 .scrollWrap {
   height: calc(100vh - 30px - 52px);
   overflow-y: auto;
-  border: 1px solid red;
+  padding: 0 12px;
+  box-sizing: border-box;
 }
 
 .left {
@@ -157,20 +190,9 @@ export default {
 .scope {
   display: flex;
   justify-content: space-between;
-  padding: 0 12px;
   font-size: 12px;
   height: 30px;
   align-items: center;
-}
-
-.slider {
-  height: 30px;
-  margin: 0 12px;
-  background: orange;
-}
-
-.postWrap {
-  padding: 0 12px;
 }
 
 .footer {
@@ -178,5 +200,63 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  border-top: 1px solid #ccc;
+}
+
+.uni-margin-wrap {
+  width: 100%;
+  display: flex;
+  margin-top: 8px;
+  background: #fcf1e9;
+  box-sizing: border-box;
+  border-radius: 2px;
+}
+.recommend {
+  width: 30px;
+  font-size: 12px;
+  padding-left: 8px;
+  height: 24px;
+  line-height: 24px;
+}
+.swiper {
+  height: 24px;
+  width: calc(100% - 30px);
+}
+.swiper-item {
+  font-size: 12px;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.swiper-text {
+  display: block;
+  word-break: keep-all;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: calc(100% - 20px);
+}
+
+.newPost {
+  background: #5dc588;
+  border: 1px solid black;
+  padding: 8px;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  margin-top: -40px;
+  position: relative;
+}
+
+.publish-text {
+  position: absolute;
+  bottom: -20px;
+  width: 50px;
+  text-align: center;
+  left: calc(50% - 25px);
+  font-size: 12px;
+  color: black;
 }
 </style>
