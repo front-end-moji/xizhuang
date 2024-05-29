@@ -26,7 +26,7 @@
       <text class="hotTitle">热门话题</text>
 
       <view class="hotTopicWrap">
-        <view class="hotTopicItem">
+        <view class="hotTopicItem" @click="navToPostDetail">
           <view class="hotLeft">
             <view class="hotTitle"> 这成为富豪们的游乐场 </view>
             <view class="desc">
@@ -82,6 +82,11 @@ export default {
     navToPostLit: () => {
       uni.navigateTo({
         url: "/pages/postList/index",
+      });
+    },
+    navToPostDetail: () => {
+      uni.navigateTo({
+        url: "/pages/postList/details",
       });
     },
   },
