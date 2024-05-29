@@ -33,29 +33,19 @@
               据“公开的秘密”組织初步估计，美国2022年中期选举的“
             </view>
             <view class="info">
-              <view class="date">2022.01.04</view>
+              <view class="date">2024.05.24</view>
               <view class="split">|</view>
-              <view class="viewCount">666次阅读</view>
+              <view class="viewCount">6次阅读</view>
             </view>
           </view>
           <view class="hotRight">
-            <view class="hotImg"></view>
-          </view>
-        </view>
-        <view class="hotTopicItem">
-          <view class="hotLeft">
-            <view class="hotTitle"> 这成为富豪们的游乐场 </view>
-            <view class="desc">
-              据“公开的秘密”組织初步估计，美国2022年中期选举的“
+            <view class="hotImg">
+              <img
+                class="homeImg"
+                src="https://www.kkday.com/zh-hk/blog/wp-content/uploads/WhatsApp-Image-2023-08-10-at-16.40.27-760x510.webp"
+                alt=""
+              />
             </view>
-            <view class="info">
-              <view class="date">2022.01.04</view>
-              <view class="split">|</view>
-              <view class="viewCount">666次阅读</view>
-            </view>
-          </view>
-          <view class="hotRight">
-            <view class="hotImg"></view>
           </view>
         </view>
       </view>
@@ -224,7 +214,13 @@ export default {
 .hotImg {
   width: 100%;
   height: 100%;
-  background: #6e96a5;
   border-radius: 8px;
+  overflow: hidden;
+}
+
+.homeImg {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
 }
 </style>
