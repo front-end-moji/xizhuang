@@ -13,5 +13,7 @@ export default {
 </script>
 
 <style>
-/*每个页面公共css */
+page {
+  background-color: #F7F7F7;
+}
 </style>

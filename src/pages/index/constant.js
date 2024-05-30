@@ -1,17 +1,17 @@
 export const NAV_LIST = [
   {
     title: "贴吧",
-    icon: "../../static/xinwendongtai.png",
+    icon: "../../static/post.png",
     path: "/pages/postList/index",
   },
   {
     title: "跑腿",
-    icon: "../../static/meishi.png",
+    icon: "../../static/errands.png",
     path: "",
   },
   {
     title: "美食",
-    icon: "../../static/meishi.png",
+    icon: "../../static/food.png",
     path: "",
   },
 ];

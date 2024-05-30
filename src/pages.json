@@ -9,7 +9,7 @@
     {
       "path": "pages/index/index",
       "style": {
-        "navigationBarTitleText": "主页"
+        "navigationStyle": "custom"
       }
     },
     {
@@ -36,7 +36,7 @@
         "navigationBarTitleText": "新建话题"
       }
     },
-		{
+    {
       "path": "pages/login/index",
       "style": {
         "navigationBarTitleText": "登录"
@@ -51,7 +51,7 @@
     {
       "path": "pages/mine/index",
       "style": {
-        "navigationBarTitleText": "个人中心"
+        "navigationStyle": "custom"
       }
     }
   ],
@@ -66,14 +66,14 @@
   },
   "tabBar": {
     "color": "#7A7E83",
-    "selectedColor": "#3cc51f",
+    "selectedColor": "#000000",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "iconPath": "static/homeIcon.png",
-        "selectedIconPath": "static/homeIconSelected.png",
+        "iconPath": "static/home.png",
+        "selectedIconPath": "static/homeSelected.png",
         "text": "首页"
       },
       {
