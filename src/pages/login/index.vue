@@ -17,9 +17,11 @@ export default {
     login() {
       wx.login().then((res) => {
         wechatLogin(res.code).then((res) => {
-          const {code} = res;
+          const { code } = res;
           if (code === 0) {
-            
+            const { user } = res.data;
+            this.$store.commit("setUser", user);
+            wx.navigateBack();
           }
         });
       });

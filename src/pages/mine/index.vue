@@ -1,11 +1,19 @@
 <template>
   <view class="bg"></view>
   <view class="content">
-    <view class="loginArea" @click="go2Login">
+    <view v-if="!$store.state.user" class="loginArea" @click="go2Login">
       <view class="avatar">
         <image class="logo" src="/static/mine1.png"></image>
       </view>
-      <view class="loginText"> 点击此处登录> </view>
+      <view class="loginText">
+        点击此处登录<uni-icons type="right" size="20"></uni-icons
+      ></view>
+    </view>
+    <view v-if="$store.state.user" class="loginArea" @click="go2Login">
+      <view class="avatar">
+        <image class="logo" src="/static/mine1.png"></image>
+      </view>
+      <view class="loginText">{{ $store.state.user.name }} </view>
     </view>
     <view class="listWrap">
       <view class="listItem">
@@ -48,9 +56,7 @@
         <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
       </view>
     </view>
-    <view class="logout">
-      退出登录
-    </view>
+    <view class="logout"> 退出登录 </view>
   </view>
 </template>
 
@@ -63,6 +69,11 @@ export default {
     };
   },
   onLoad() {
+    console.log(
+      "%c 🐙[  ]-67",
+      "font-size:13px; background:#FFE599; color:#FFB570;",
+      this.$store.state
+    );
     // wx.login().then((res) => {
     //   wechatLogin(res.code).then((res) => {
     //     console.log(res);
