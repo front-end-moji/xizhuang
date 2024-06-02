@@ -10,17 +10,11 @@
       ></view>
     </view>
     <view v-if="$store.state.user" class="loginArea" @click="go2UserInfo">
-      <view
-        class="avatar"
-        v-if="!$store.state.user.avatar"
-      >
+      <view class="avatar" v-if="!$store.state.user.avatar">
         <image class="logo" src="/static/mine1.png"></image>
       </view>
-      <view
-        class="avatar avatarWrap"
-        v-if="$store.state.user.avatar"
-      >
-        <image class="logo" :src="$store.state.user.avatar"></image>
+      <view class="avatar avatarWrap" v-if="$store.state.user.avatar">
+        <image class="avatarImg" :src="$store.state.user.avatar"></image>
       </view>
       <view class="loginText">{{ $store.state.user.name }} </view>
     </view>
@@ -70,17 +64,12 @@
 </template>
 
 <script>
+import { logout } from "@/api/mine.js";
 export default {
   data() {
     return {};
   },
-  onLoad() {
-    console.log(
-      "%c 🐙[  ]-67",
-      "font-size:13px; background:#FFE599; color:#FFB570;",
-      this.$store.state
-    );
-  },
+  onLoad() {},
   methods: {
     go2Login() {
       wx.navigateTo({
@@ -93,7 +82,18 @@ export default {
       });
     },
     logout() {
-      
+      logout().then((res) => {
+        const { code } = res;
+        if (code === 0) {
+          this.$store.commit("setUser", null);
+          this.$store.commit("setToken", null);
+          
+          wx.setStorage({
+            key: "isLogin",
+            data: false,
+          });
+        }
+      });
     },
   },
 };
@@ -162,6 +162,7 @@ export default {
   border-radius: 50%;
   border: 1px solid #ffcd36;
   background: #ffcd3644;
+  overflow: hidden;
 }
 
 .loginText {
@@ -171,5 +172,10 @@ export default {
 .logo {
   width: 60%;
   height: 60%;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
 }
 </style>

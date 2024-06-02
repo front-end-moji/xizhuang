@@ -16,22 +16,6 @@ export default {
   methods: {
     login() {
       this.$store.dispatch('login');
-      // wx.login().then((res) => {
-      //   wechatLogin(res.code).then((res) => {
-      //     const { code } = res;
-      //     console.log('%c 🐙[ res ]-21', 'font-size:13px; background:#FFE599; color:#FFB570;', res)
-      //     if (code === 0) {
-      //       const { user, token } = res.data;
-      //       this.$store.commit("setUser", user);
-      //       this.$store.commit("setToken", token)
-      //       wx.setStorage({
-      //         key: "isLogin",
-      //         data: true,
-      //       });
-      //       wx.navigateBack();
-      //     }
-      //   });
-      // });
     },
   },
 };

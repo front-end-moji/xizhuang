@@ -59,6 +59,12 @@
       "style": {
         "navigationBarTitleText": "个人资料"
       }
+    },
+    {
+      "path": "pages/school/index",
+      "style": {
+        "navigationBarTitleText": "绑定学校"
+      }
     }
   ],
   "globalStyle": {

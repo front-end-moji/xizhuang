@@ -20,3 +20,10 @@ export const updateUser = function (user) {
     },
   });
 };
+
+export const logout = function () {
+  return request({
+    url: "logout",
+    method: "post",
+  });
+};

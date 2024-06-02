@@ -5,7 +5,7 @@
       class="button"
       @chooseavatar="onChooseAvatar"
     >
-      <uni-list-item v-if="!$store.state.user.avatar" class="item">
+      <uni-list-item class="item">
         <template v-slot:header>
           <text>头像</text>
         </template>
@@ -58,7 +58,6 @@ export default {
     },
     onChangeName(e) {
       const { value } = e.detail;
-      console.log('%c 🐙[ value ]-61', 'font-size:13px; background:#FFE599; color:#FFB570;', value)
       this.$store.dispatch("updateUser", { name: value });
     },
   },
@@ -91,6 +90,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
 
 .right {
