@@ -84,6 +84,7 @@ export default {
       isAnonymous: false,
       rangeList: POST_RANGE_LIST,
       topicList: [],
+      postImgSrc: [],
     };
   },
   computed: {
@@ -95,17 +96,15 @@ export default {
   onLoad: function (option) {
     this.fetchPostTopicList();
   },
-  mounted() {
-    console.log(
-      "%c [ this. topicRangeList ]-82",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      this.topicRangeList
-    );
-  },
+  mounted() {},
   methods: {
     publish: function () {
+      const content = JSON.stringify({
+        text: this.postContent,
+        media: this.postImgSrc,
+      });
       const data = {
-        content: this.postContent,
+        content,
         title: "",
         topic: this.topicList[this.index].id,
         visibility: this.rangeIndex + "",
@@ -126,24 +125,13 @@ export default {
       uni.chooseImage({
         count: 3,
         sourceType: ["album"],
-        success(res) {
-          console.log(
-            "%c [ res ]-130",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            res
-          );
-        },
+        success(res) {},
       });
     },
     fetchPostTopicList() {
       getPostTopicList().then(({ code, data }) => {
         if (code === 0) {
           this.topicList = data.list;
-          console.log(
-            "%c [ this.topicList ]-113",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            this.topicList
-          );
         }
       });
     },
@@ -158,48 +146,31 @@ export default {
       this.rangeIndex = e.detail.value;
     },
     uploadSelect(res) {
-      this.uploadImg(res.tempFiles);
-      console.log(
-        "%c [ res ]-146",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        res
-      );
+      this.uploadImg(res.tempFilePaths);
     },
     uploadImg(tempFilePaths) {
       uni.uploadFile({
-        url: "http://101.200.120.4:8081/api/oss/upload",
+        url: "https://www.dqxyq.com/api/oss/upload",
         filePath: tempFilePaths[0],
-        name: "xxx",
-        success(data) {
-          console.log(
-            "%c [  ]-160",
-            "font-size:13px; background:pink; color:#bf2c9f;"
-          );
+        name: "file",
+        header: {
+          token: this.$store.state.token,
         },
-        fail(error) {
+        success: (res) => {
           console.log(
-            "%c [ error ]-165",
+            "%c [ res ]-160",
             "font-size:13px; background:pink; color:#bf2c9f;",
-            error
+            res
           );
+          const src = JSON.parse(res.data).data;
+          console.log(
+            "%c [ src ]-161",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            src
+          );
+          this.postImgSrc.push(src);
         },
       });
-      console.log(
-        "%c [ tempFilePaths ]-154",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        tempFilePaths
-      );
-      // const fileBinary = uni.readFile({
-      //   filePath: tempFilePaths[0], // 图片文件路径
-      //   encoding: "base64", // 文件内容的编码格式，这里使用base64编码
-      // });
-      // uploadImgToOss(fileBinary).then((data) => {
-      //   console.log(
-      //     "%c [ data ]-155",
-      //     "font-size:13px; background:pink; color:#bf2c9f;",
-      //     data
-      //   );
-      // });
     },
   },
 };

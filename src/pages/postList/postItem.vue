@@ -1,7 +1,7 @@
 <template>
   <view class="postItem">
     <view class="postHeader">
-      <avatar></avatar>
+      <avatar :url="postInfo.avatar"></avatar>
       <view class="info">
         <text class="name">章鱼不太懒</text>
         <view class="detailInfo">
@@ -12,7 +12,7 @@
         </view>
       </view>
 
-      <view class="postTopic">其他话题</view>
+      <view class="postTopic">{{ topicText }}</view>
     </view>
 
     <view class="post-content" :class="{ isDetail: isDetail }">
@@ -21,6 +21,7 @@
           class="text"
           id="xxx"
           :class="{ expand: needExpand & !hasExpand }"
+          @click="navToPostDetail"
         >
           {{ postContent }}
         </view>
@@ -52,6 +53,13 @@
         </view>
         <view class="action-btns">
           <uni-icons
+            @click="fetchDeletePost"
+            type="trash"
+            size="20"
+            color="#111111"
+            class="edit-icon"
+          ></uni-icons>
+          <uni-icons
             @click="navToPostDetail"
             type="redo"
             size="20"
@@ -72,58 +80,54 @@
 </template>
 
 <script>
-import { nextTick } from "vue";
 import { Avatar } from "../../components/avatar.vue";
+import { deletePost } from "@/api/post";
+import { find } from "lodash";
 
 export default {
   name: "PostItem",
   data() {
     return {
-      images: [
-        // "https://www.southernliving.com/thmb/FlPNHGSV-VVRaR3ZZCbkAi4Vn9k=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/gettyimages-114166947-1-268128f97e5c415baede328c1fe32f55.jpg",
-        // "https://www.hartz.com/wp-content/uploads/2022/04/small-dog-owners-1.jpg",
-        // "https://i.pinimg.com/736x/54/36/95/54369563e20e94dcab5fc7f40cf7e8d6.jpg",
-        // "https://www.princeton.edu/sites/default/files/styles/scale_1440/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=lA8UuoHt",
-      ],
+      images: [],
       needExpand: false,
       hasExpand: false,
       postContent: "",
     };
   },
   props: {
-    contentStr: {
-      default: "",
-      type: String,
+    postInfo: {
+      default: {},
+      type: Object,
+    },
+    topicList: {
+      default: [],
+      type: Array,
     },
     isDetail: {
       default: false,
       type: Boolean,
     },
+    deleteCb: {
+      default: () => {},
+      type: Function,
+    },
+  },
+  computed: {
+    topicText() {
+      return find(this.topicList, { id: this.postInfo.topic }).name;
+    },
   },
   components: { Avatar },
   onLoad: function (option) {},
   mounted() {
-    if (this.contentStr) {
-      const { text, media } = JSON.parse(this.content);
+    if (this.postInfo.content) {
+      const { text, media } = JSON.parse(this.postInfo.content);
       this.images = media;
       this.postContent = text;
     }
 
-    const query = uni.createSelectorQuery().in(this);
-    query
-      .select("#xxx")
-      .boundingClientRect((data) => {
-        const { height } = data;
-        if (!height) {
-          return;
-        }
-        if (height > 60) {
-          this.needExpand = true;
-        }
-      })
-      .exec();
+    this.calcIsExpand();
   },
-  updated() {},
   methods: {
     calcIsExpand() {
       const query = uni.createSelectorQuery().in(this);
@@ -139,6 +143,14 @@ export default {
           }
         })
         .exec();
+    },
+    fetchDeletePost() {
+      deletePost(this.postInfo.id).then(({ code, data }) => {
+        uni.showToast({
+          title: "删除成功",
+        });
+        this.deleteCb();
+      });
     },
     onTabClick(item) {
       this.activeTab = item;

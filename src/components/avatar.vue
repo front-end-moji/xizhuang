@@ -1,6 +1,6 @@
 <template>
   <view class="wrap">
-    <img class="img" src="../static/mockAvatar.jpg" alt="" />
+    <img class="img" :src="url" alt="" />
   </view>
 </template>
 

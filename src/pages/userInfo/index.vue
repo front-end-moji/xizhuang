@@ -55,6 +55,11 @@ export default {
     onChooseAvatar(e) {
       const _this = this;
       const { avatarUrl } = e.detail;
+      console.log(
+        "%c [ avatarUrl ]-58",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        avatarUrl
+      );
       wx.uploadFile({
         url: "https://www.dqxyq.com/api/oss/upload",
         filePath: avatarUrl,
@@ -63,10 +68,11 @@ export default {
           token: this.$store.state.token,
         },
         success: function (res) {
-          _this.$store.dispatch("updateUser", { avatar: JSON.parse(res.data).data });
+          _this.$store.dispatch("updateUser", {
+            avatar: JSON.parse(res.data).data,
+          });
         },
       });
-      
     },
     onChangeName(e) {
       const { value } = e.detail;

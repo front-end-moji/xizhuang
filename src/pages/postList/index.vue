@@ -57,9 +57,14 @@
       </view>
 
       <view class="postWrap">
-        <view class="wrap" v-if="postList.length > 0">
+        <view class="postContentWrap" v-if="postList.length > 0">
           <view class="item" v-for="item in postList" :key="item.id">
-            <post-item :key="item.id" :contentStr="item.content"></post-item>
+            <post-item
+              :postInfo="item"
+              :key="item.id"
+              :deleteCb="fetchPostList"
+              :topicList="topicList"
+            ></post-item>
           </view>
         </view>
         <view class="empty-post" v-else> 暂无热帖，抢占沙发啦~ </view>
@@ -77,7 +82,6 @@
 
 <script lang="js">
 import PostItem from "./postItem.vue";
-import { TOPIC_LIST } from './constant'
 import { getPostList, getPostTopicList } from "@/api/post";
 import { isEmpty } from 'lodash'
 
@@ -135,12 +139,13 @@ export default {
       this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0})
     },
     fetchPostList(params) {
+      // this.store.state.user
+      console.log('%c [ this.store.state.user ]-138', 'font-size:13px; background:pink; color:#bf2c9f;', this.$store.state.user)
+      const { school } = this.$store.state.user
       const paramsObj = {
-        authorId: "",
         isSearchLatestPost: 1,
         limit: 10,
         page: 1,
-        visibility: "",
         topic: this.activeTab,
         ...params
       }
@@ -231,6 +236,9 @@ export default {
 .left.active {
   background: #5dc588;
   color: white;
+}
+
+.postContentWrap {
 }
 
 .scope {

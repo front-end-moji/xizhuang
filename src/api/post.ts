@@ -2,7 +2,6 @@ import Request from "../utils/request";
 let request = new Request().http;
 
 const defaultPostData = {
-  authorId: "",
   // content: "",
   // createOperator: 0,
   // deleteOperator: 0,
@@ -89,5 +88,15 @@ export const uploadImgToOss = function (file) {
     header: {
       "Content-Type": "multipart/form-data",
     },
+  });
+};
+
+/**
+ * 删除帖子
+ */
+export const deletePost = function (id) {
+  return request({
+    url: `posts/delete/${id}`,
+    method: "POST",
   });
 };
