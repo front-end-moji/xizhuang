@@ -1,5 +1,6 @@
 // vuex 的使用  详情参考官网 https://uniapp.dcloud.io/vue-vuex
 import { stringify } from "qs";
+import store from "@/store";
 
 const BASE_URL = "http://101.200.120.4:8081/renren-api/";
 
@@ -12,7 +13,7 @@ export default class Request {
       method = param.method,
       header = {},
       data = param.data || {},
-      token = param.token || "",
+      token = param.token || store.state.token || "",
       hideLoading = param.hideLoading || false;
 
     //拼接完整请求地址
@@ -52,7 +53,10 @@ export default class Request {
         url: requestUrl,
         data: data,
         method: method,
-        header: header,
+        header: {
+          ...header,
+          token,
+        },
         success: (res) => {
           // 判断 请求api 格式是否正确
           if (res.statusCode && res.statusCode != 200) {

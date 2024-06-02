@@ -53,6 +53,12 @@
       "style": {
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/userInfo/index",
+      "style": {
+        "navigationBarTitleText": "个人资料"
+      }
     }
   ],
   "globalStyle": {

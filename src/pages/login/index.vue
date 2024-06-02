@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { wechatLogin } from "@/api/mine";
+
 export default {
   data() {
     return {
@@ -15,16 +15,23 @@ export default {
   onLoad() {},
   methods: {
     login() {
-      wx.login().then((res) => {
-        wechatLogin(res.code).then((res) => {
-          const { code } = res;
-          if (code === 0) {
-            const { user } = res.data;
-            this.$store.commit("setUser", user);
-            wx.navigateBack();
-          }
-        });
-      });
+      this.$store.dispatch('login');
+      // wx.login().then((res) => {
+      //   wechatLogin(res.code).then((res) => {
+      //     const { code } = res;
+      //     console.log('%c 🐙[ res ]-21', 'font-size:13px; background:#FFE599; color:#FFB570;', res)
+      //     if (code === 0) {
+      //       const { user, token } = res.data;
+      //       this.$store.commit("setUser", user);
+      //       this.$store.commit("setToken", token)
+      //       wx.setStorage({
+      //         key: "isLogin",
+      //         data: true,
+      //       });
+      //       wx.navigateBack();
+      //     }
+      //   });
+      // });
     },
   },
 };

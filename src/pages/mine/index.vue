@@ -9,9 +9,18 @@
         点击此处登录<uni-icons type="right" size="20"></uni-icons
       ></view>
     </view>
-    <view v-if="$store.state.user" class="loginArea" @click="go2Login">
-      <view class="avatar">
+    <view v-if="$store.state.user" class="loginArea" @click="go2UserInfo">
+      <view
+        class="avatar"
+        v-if="!$store.state.user.avatar"
+      >
         <image class="logo" src="/static/mine1.png"></image>
+      </view>
+      <view
+        class="avatar avatarWrap"
+        v-if="$store.state.user.avatar"
+      >
+        <image class="logo" :src="$store.state.user.avatar"></image>
       </view>
       <view class="loginText">{{ $store.state.user.name }} </view>
     </view>
@@ -64,9 +73,7 @@
 import { wechatLogin } from "@/api/mine";
 export default {
   data() {
-    return {
-      title: "Hello1123",
-    };
+    return {};
   },
   onLoad() {
     console.log(
@@ -74,20 +81,21 @@ export default {
       "font-size:13px; background:#FFE599; color:#FFB570;",
       this.$store.state
     );
-    // wx.login().then((res) => {
-    //   wechatLogin(res.code).then((res) => {
-    //     console.log(res);
-    //   });
-    //   console.log(res);
-    // });
   },
   methods: {
     go2Login() {
-      // 跳转到登录页面
       wx.navigateTo({
         url: "/pages/login/index",
       });
     },
+    go2UserInfo() {
+      wx.navigateTo({
+        url: "/pages/userInfo/index",
+      });
+    },
+    updateAvatar() {
+      console.warn(111);
+    }
   },
 };
 </script>
@@ -99,6 +107,7 @@ export default {
   text-decoration: underline;
   text-align: center;
 }
+
 .bg {
   height: 35vh;
   width: 100vw;
@@ -107,6 +116,11 @@ export default {
   left: 0;
   background: linear-gradient(to bottom, #ffcd3633, #f7f7f7);
   z-index: -1;
+}
+
+.avatar.avatarWrap {
+  border: none;
+  background: transparent;
 }
 
 .listWrap {

@@ -6,9 +6,17 @@ export const wechatLogin = function (code) {
     url: "wechat/login",
     method: "post",
     data: {
-      code: code
+      code: code,
     },
-    // token: operate.isToken(),
-    // token: "e5b18196ae624037b35458b2c32f054a",
+  });
+};
+
+export const updateUser = function (user) {
+  return request({
+    url: "user/profile/update",
+    method: "post",
+    data: {
+      ...user
+    },
   });
 };
