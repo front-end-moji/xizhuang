@@ -3,8 +3,8 @@ let request = new Request().http;
 
 export const getSchoolList = function (code) {
   return request({
-    url: "wechat/login",
-    method: "post",
+    url: "school/list",
+    method: "get",
     data: {
       code: code,
     },

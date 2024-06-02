@@ -8,8 +8,17 @@
   >
     <template v-slot:left>
       <view class="schoolWrap"
-        ><uni-icons type="location" size="26"></uni-icons>
-        <view class="schoolName"> 江南皮革厂大学 </view>
+        @click="updateSchool"
+        >
+        <uni-icons type="location" size="26"></uni-icons>
+        <text
+          class="schoolName"
+          v-if="!$store.state.user || !$store.state.user.school"
+          >暂未绑定</text
+        >
+        <text v-else class="schoolName">{{
+          $store.state.user.school.name
+        }}</text>
         <uni-icons type="right" size="20"></uni-icons>
       </view>
     </template>
@@ -126,6 +135,17 @@ export default {
         url: "/pages/postList/details",
       });
     },
+    updateSchool() {
+      if (!this.$store.state.user) {
+        wx.navigateTo({
+          url: "/pages/login/index",
+        });
+      } else {
+        wx.navigateTo({
+          url: "/pages/school/index",
+        });
+      }
+    }
   },
 };
 </script>

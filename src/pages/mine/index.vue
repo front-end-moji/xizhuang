@@ -19,7 +19,7 @@
       <view class="loginText">{{ $store.state.user.name }} </view>
     </view>
     <view class="listWrap">
-      <view class="listItem">
+      <view class="listItem" @click="go2School">
         <view>
           <uni-icons type="map" size="18" color="#444444"></uni-icons>
           绑定学校
@@ -30,7 +30,10 @@
             size="16"
             color="#444444"
           ></uni-icons>
-          暂未登录
+          <text v-if="!$store.state.user || !$store.state.user.school"
+            >暂未绑定</text
+          >
+          <text v-else>{{ $store.state.user.school.name }}</text>
           <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
         </view>
       </view>
@@ -87,12 +90,17 @@ export default {
         if (code === 0) {
           this.$store.commit("setUser", null);
           this.$store.commit("setToken", null);
-          
+
           wx.setStorage({
             key: "isLogin",
             data: false,
           });
         }
+      });
+    },
+    go2School() {
+      wx.navigateTo({
+        url: "/pages/school/index",
       });
     },
   },
