@@ -53,8 +53,20 @@ export default {
   onLoad() {},
   methods: {
     onChooseAvatar(e) {
+      const _this = this;
       const { avatarUrl } = e.detail;
-      this.$store.dispatch("updateUser", { avatar: avatarUrl });
+      wx.uploadFile({
+        url: "https://www.dqxyq.com/api/oss/upload",
+        filePath: avatarUrl,
+        name: "file",
+        header: {
+          token: this.$store.state.token,
+        },
+        success: function (res) {
+          _this.$store.dispatch("updateUser", { avatar: JSON.parse(res.data).data });
+        },
+      });
+      
     },
     onChangeName(e) {
       const { value } = e.detail;
