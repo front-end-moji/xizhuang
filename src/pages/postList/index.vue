@@ -57,7 +57,9 @@
       </view>
 
       <view class="postWrap">
-        <post-item></post-item>
+        <view class="item" v-for="item in postList" :key="item.id">
+          <post-item :key="item.id" :contentStr="item.content"></post-item>
+        </view>
       </view>
     </view>
 
@@ -71,8 +73,9 @@
 </template>
 
 <script lang="js">
-import postItem from "./postItem.vue";
+import PostItem from "./postItem.vue";
 import { TOPIC_LIST } from './constant'
+import { getPostList } from "@/api/home";
 
 export default {
   data() {
@@ -87,20 +90,25 @@ export default {
       autoplay: true,
       interval: 2000,
       duration: 500,
+      // FIXME: 需要更换
       textList: [
         '喜欢上别人的女朋友怎么办？',
         '如果你对象变成一只蟑螂，你会怎么办',
         '投稿',
         '冒泡',
       ],
+      postList: []
     };
   },
-  components: {postItem},
-  onLoad: function (option) {},
+  components: {PostItem},
+  onLoad: function (option) {
+    this.fetchPostList()
+  },
   computed: {
     getActiveClass: () => {
       return this.activeTab === "全部话题" ? "active" : "";
     },
+
   },
   methods: {
     onTabClick(item) {
@@ -116,7 +124,25 @@ export default {
     },
     changeViewType(viewType) {
       this.viewType = viewType
+    },
+    fetchPostList() {
+      getPostList({
+        authorId: "",
+        isSearchLatestPost: 1,
+        limit: 10,
+        page: 1,
+        visibility: "",
+      })
+        .then(({ data, code }) => {
+          if (code === 0) {
+            const { list } = data;
+            console.log('%c [ list ]-137', 'font-size:13px; background:pink; color:#bf2c9f;', list)
+            this.postList = list
+          }
+        })
+        .catch((error) => {});
     }
+
   },
 };
 </script>

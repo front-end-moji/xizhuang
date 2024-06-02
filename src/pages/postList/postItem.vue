@@ -22,7 +22,7 @@
           id="xxx"
           :class="{ expand: needExpand & !hasExpand }"
         >
-          晒一下小狗狗把
+          {{ postContent }}
         </view>
       </view>
 
@@ -72,24 +72,29 @@
 </template>
 
 <script>
+import { nextTick } from "vue";
 import { Avatar } from "../../components/avatar.vue";
 
 export default {
-  name: "postItem",
+  name: "PostItem",
   data() {
     return {
       images: [
-        "https://www.southernliving.com/thmb/FlPNHGSV-VVRaR3ZZCbkAi4Vn9k=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/gettyimages-114166947-1-268128f97e5c415baede328c1fe32f55.jpg",
-        "https://www.hartz.com/wp-content/uploads/2022/04/small-dog-owners-1.jpg",
-        "https://i.pinimg.com/736x/54/36/95/54369563e20e94dcab5fc7f40cf7e8d6.jpg",
-        "https://www.princeton.edu/sites/default/files/styles/scale_1440/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=lA8UuoHt",
+        // "https://www.southernliving.com/thmb/FlPNHGSV-VVRaR3ZZCbkAi4Vn9k=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/gettyimages-114166947-1-268128f97e5c415baede328c1fe32f55.jpg",
+        // "https://www.hartz.com/wp-content/uploads/2022/04/small-dog-owners-1.jpg",
+        // "https://i.pinimg.com/736x/54/36/95/54369563e20e94dcab5fc7f40cf7e8d6.jpg",
+        // "https://www.princeton.edu/sites/default/files/styles/scale_1440/public/images/2022/02/KOA_Nassau_2697x1517.jpg?itok=lA8UuoHt",
       ],
       needExpand: false,
       hasExpand: false,
+      postContent: "",
     };
   },
   props: {
-    postInfo: {},
+    contentStr: {
+      default: "",
+      type: String,
+    },
     isDetail: {
       default: false,
       type: Boolean,
@@ -98,6 +103,18 @@ export default {
   components: { Avatar },
   onLoad: function (option) {},
   mounted() {
+    console.log(this.content);
+    if (this.contentStr) {
+      const { text, media } = JSON.parse(this.content);
+      console.log(
+        "%c [ text ]-109",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        text
+      );
+      this.images = media;
+      this.postContent = text;
+    }
+
     const query = uni.createSelectorQuery().in(this);
     query
       .select("#xxx")
@@ -112,7 +129,29 @@ export default {
       })
       .exec();
   },
+  updated() {
+    console.log(
+      "%c [  ]-137",
+      "font-size:13px; background:pink; color:#bf2c9f;",
+      22222
+    );
+  },
   methods: {
+    calcIsExpand() {
+      const query = uni.createSelectorQuery().in(this);
+      query
+        .select("#xxx")
+        .boundingClientRect((data) => {
+          const { height } = data;
+          if (!height) {
+            return;
+          }
+          if (height > 60) {
+            this.needExpand = true;
+          }
+        })
+        .exec();
+    },
     onTabClick(item) {
       this.activeTab = item;
     },
