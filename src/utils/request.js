@@ -27,14 +27,18 @@ export default class Request {
       method = method.toUpperCase(); //小写改为大写
       if (method == "POST") {
         header = {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
         };
+        // 处理文件上传
+        if (param.header) {
+          header = param.header;
+        }
       } else {
         if (method === "GET") {
           requestUrl = requestUrl + `?${stringify(data)}`;
         }
         header = {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
         };
       }
     }

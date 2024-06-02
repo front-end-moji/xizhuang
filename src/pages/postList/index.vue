@@ -2,16 +2,16 @@
   <view class="wrap">
     <view class="header">
       <view
-        v-for="item in tabList"
-        :key="item"
+        v-for="item in topicList"
+        :key="item.id"
         class="headerItem"
         :class="{ active: true }"
         @click="onTabClick(item)"
       >
-        <view v-if="activeTab === item" class="headerItem active"
-          ># {{ item }}</view
+        <view v-if="activeTab === item.id" class="headerItem active"
+          ># {{ item.name }}</view
         >
-        <view v-else class="headerItem"> {{ item }}</view>
+        <view v-else class="headerItem"> {{ item.name }}</view>
       </view>
     </view>
 
@@ -57,9 +57,12 @@
       </view>
 
       <view class="postWrap">
-        <view class="item" v-for="item in postList" :key="item.id">
-          <post-item :key="item.id" :contentStr="item.content"></post-item>
+        <view class="wrap" v-if="postList.length > 0">
+          <view class="item" v-for="item in postList" :key="item.id">
+            <post-item :key="item.id" :contentStr="item.content"></post-item>
+          </view>
         </view>
+        <view class="empty-post" v-else> 暂无热帖，抢占沙发啦~ </view>
       </view>
     </view>
 
@@ -75,16 +78,17 @@
 <script lang="js">
 import PostItem from "./postItem.vue";
 import { TOPIC_LIST } from './constant'
-import { getPostList } from "@/api/home";
+import { getPostList, getPostTopicList } from "@/api/post";
+import { isEmpty } from 'lodash'
 
 export default {
   data() {
     return {
       viewTypes: ['最新', '热门'],
-      activeTab: "全部话题",
-      tabList: TOPIC_LIST,
+      activeTab: '',
       viewRange: 'ALL', // ALL or ONLY
       viewType: '最新', // LATEST or HOT
+      isSearchLatestPost: 1, // 1 => 最新； 0 => 最热
       background: ['color1', 'color2', 'color3'],
       indicatorDots: true,
       autoplay: true,
@@ -97,22 +101,23 @@ export default {
         '投稿',
         '冒泡',
       ],
-      postList: []
+      postList: [],
+      topicList: []
     };
   },
   components: {PostItem},
   onLoad: function (option) {
-    this.fetchPostList()
+    this.fetchPostTopicList()
   },
   computed: {
-    getActiveClass: () => {
-      return this.activeTab === "全部话题" ? "active" : "";
-    },
-
   },
   methods: {
     onTabClick(item) {
-      this.activeTab = item;
+      if (this.activeTab === item.id) {
+        return
+      }
+      this.activeTab = item.id;
+      this.fetchPostList({ topic: item.id })
     },
     navToCreatePost: () => {
       uni.navigateTo({
@@ -123,26 +128,43 @@ export default {
       this.viewRange = this.viewRange === 'ALL' ? 'ONLY' : 'ALL'
     },
     changeViewType(viewType) {
+      if (this.viewType === viewType) {
+        return
+      }
       this.viewType = viewType
+      this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0})
     },
-    fetchPostList() {
-      getPostList({
+    fetchPostList(params) {
+      const paramsObj = {
         authorId: "",
         isSearchLatestPost: 1,
         limit: 10,
         page: 1,
         visibility: "",
-      })
+        topic: this.activeTab,
+        ...params
+      }
+      getPostList(paramsObj)
         .then(({ data, code }) => {
           if (code === 0) {
             const { list } = data;
-            console.log('%c [ list ]-137', 'font-size:13px; background:pink; color:#bf2c9f;', list)
             this.postList = list
           }
         })
         .catch((error) => {});
+    },
+    fetchPostTopicList() {
+      getPostTopicList().then(({ code, data }) => {
+        if (code === 0) {
+          this.topicList = data.list
+          if (!isEmpty(data.list)) {
+            const firstTopic = data.list[0].id;
+            this.activeTab = firstTopic;
+            this.fetchPostList({ topic: firstTopic })
+          }
+        }
+      })
     }
-
   },
 };
 </script>
@@ -282,5 +304,14 @@ export default {
   left: calc(50% - 25px);
   font-size: 12px;
   color: black;
+}
+
+.empty-post {
+  font-size: 12px;
+  color: #ccc;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

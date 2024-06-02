@@ -2,24 +2,37 @@ import Request from "../utils/request";
 let request = new Request().http;
 
 const defaultPostData = {
-  authorId: 0,
-  content: "",
-  createOperator: 0,
-  deleteOperator: 0,
-  gmtCreate: "",
-  gmtDelete: "",
-  gmtUpdate: "",
-  id: 0,
-  ids: [],
-  isDelete: true,
-  isSearchLatestPost: 0,
-  status: 0,
-  title: "",
-  topic: "",
-  updateOperator: 0,
-  visibility: "",
+  authorId: "",
+  // content: "",
+  // createOperator: 0,
+  // deleteOperator: 0,
+  // gmtCreate: "",
+  // gmtDelete: "",
+  // gmtUpdate: "",
+  // id: 0,
+  // ids: [],
+  // isDelete: false,
+  // isSearchLatestPost: 0,
+  // status: 0,
+  // title: "",
+  // topic: "",
+  // updateOperator: 0,
+  // visibility: "",
 };
 
+interface IGetPostListParams {
+  authorId?: string; // 用户id
+  content?: string; // 内容信息
+  id?: string; // post id
+  ids?: string[]; // post ids
+  isSearchLatestPost?: 1 | 0; // 是否搜索最新的帖子 1=true
+  limit?: number; // 每页多少条
+  page?: number; // 分页
+  status?: number;
+  title?: string;
+  topic?: string;
+  visibility?: string;
+}
 /**
  * 发布帖子
  * @returns
@@ -29,7 +42,52 @@ export const publishPostReq = function (data: typeof defaultPostData) {
     url: "posts/save",
     method: "POST",
     data: { ...defaultPostData, ...data },
-    // token: operate.isToken(),
-    token: "e5b18196ae624037b35458b2c32f054a",
+  });
+};
+
+/**
+ * 获取帖子列表
+ * @returns
+ */
+export const getPostList = function (data: IGetPostListParams) {
+  return request({
+    url: "posts/page",
+    method: "GET",
+    data: data,
+  });
+};
+
+/**
+ * 获取帖子详情
+ */
+export const getPostDetailById = function (data: { id: string }) {
+  return request({
+    url: `posts/${data.id}`,
+    method: "GET",
+  });
+};
+
+/**
+ * 获取帖子主题
+ */
+export const getPostTopicList = function () {
+  return request({
+    url: `posttopic/page`,
+    method: "GET",
+    data: { limit: 10, page: 1 },
+  });
+};
+
+/**
+ * 文件上传oss
+ */
+export const uploadImgToOss = function (file) {
+  return request({
+    url: `oss/upload`,
+    method: "POST",
+    data: { file },
+    header: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 };

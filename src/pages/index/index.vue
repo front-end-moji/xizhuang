@@ -64,11 +64,7 @@
           </view>
           <view class="hotRight">
             <view class="hotImg">
-              <img
-                class="homeImg"
-                src="https://www.kkday.com/zh-hk/blog/wp-content/uploads/WhatsApp-Image-2023-08-10-at-16.40.27-760x510.webp"
-                alt=""
-              />
+              <img class="homeImg" alt="" />
             </view>
           </view>
         </view>
@@ -86,11 +82,7 @@
           </view>
           <view class="hotRight">
             <view class="hotImg">
-              <img
-                class="homeImg"
-                src="https://www.kkday.com/zh-hk/blog/wp-content/uploads/WhatsApp-Image-2023-08-10-at-16.40.27-760x510.webp"
-                alt=""
-              />
+              <img class="homeImg" alt="" />
             </view>
           </view>
         </view>

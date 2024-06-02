@@ -103,14 +103,8 @@ export default {
   components: { Avatar },
   onLoad: function (option) {},
   mounted() {
-    console.log(this.content);
     if (this.contentStr) {
       const { text, media } = JSON.parse(this.content);
-      console.log(
-        "%c [ text ]-109",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        text
-      );
       this.images = media;
       this.postContent = text;
     }
@@ -129,13 +123,7 @@ export default {
       })
       .exec();
   },
-  updated() {
-    console.log(
-      "%c [  ]-137",
-      "font-size:13px; background:pink; color:#bf2c9f;",
-      22222
-    );
-  },
+  updated() {},
   methods: {
     calcIsExpand() {
       const query = uni.createSelectorQuery().in(this);

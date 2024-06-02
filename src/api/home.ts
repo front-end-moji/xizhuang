@@ -28,3 +28,16 @@ export const getPostList = function (data: IGetPostListParams) {
     token: "e5b18196ae624037b35458b2c32f054a",
   });
 };
+
+/**
+ * 获取帖子详情
+ */
+export const getPostDetailById = function (data: { id: string }) {
+  return request({
+    url: "/posts",
+    method: "GET",
+    data,
+    // token: operate.isToken(),
+    token: "e5b18196ae624037b35458b2c32f054a",
+  });
+};

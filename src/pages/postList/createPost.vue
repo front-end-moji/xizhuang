@@ -15,14 +15,23 @@
     </view>
 
     <view class="example-body">
-      <uni-file-picker limit="5"></uni-file-picker>
+      <uni-file-picker
+        v-model="imgList"
+        :auto-upload="false"
+        @select.prevent="uploadSelect"
+        file-extname="png,jpg"
+        ref="uploadFileRef"
+        limit="5"
+      ></uni-file-picker>
     </view>
 
+    <view class="xxxx" @click="selectPic"></view>
+
     <view class="topic-wrap">
-      <picker @change="bindPickerChange" :value="index" :range="array">
+      <picker @change="bindPickerChange" :value="index" :range="topicRangeList">
         <view class="uni-input">
           <text class="symbol">#</text>
-          {{ index !== undefined ? array[index] : "请选择分类" }}
+          {{ index !== undefined ? topicRangeList[index] : "请选择分类" }}
           <text class="sym">></text>
         </view>
       </picker>
@@ -55,7 +64,7 @@
     </view>
 
     <view class="submitBtn">
-      <view class="publishBtn"> 立即发布 </view>
+      <view class="publishBtn" @click="publish"> 立即发布 </view>
     </view>
   </view>
 </template>
@@ -64,33 +73,78 @@
 import { uniForms } from "@dcloudio/uni-ui/lib/uni-forms/uni-forms.vue";
 import { TOPIC_LIST, POST_RANGE_LIST } from "./constant";
 import { publishPostReq } from "../../api/post";
+import { getPostTopicList, uploadImgToOss } from "@/api/post";
 
 export default {
   data() {
     return {
       postContent: undefined,
-      array: TOPIC_LIST,
-      index: undefined,
+      index: 0,
       rangeIndex: 0,
       isAnonymous: false,
       rangeList: POST_RANGE_LIST,
+      topicList: [],
     };
   },
+  computed: {
+    topicRangeList() {
+      return this.topicList.map((item) => item.name);
+    },
+  },
   components: { uniForms },
-  onLoad: function (option) {},
+  onLoad: function (option) {
+    this.fetchPostTopicList();
+  },
+  mounted() {
+    console.log(
+      "%c [ this. topicRangeList ]-82",
+      "font-size:13px; background:pink; color:#bf2c9f;",
+      this.topicRangeList
+    );
+  },
   methods: {
     publish: function () {
       const data = {
         content: this.postContent,
         title: "",
-        topic: TOPIC_LIST[this.index],
-        visibility: this.rangeIndex,
-        // isAnonymous: this.isAnonymous, // FIXME: 处理是否匿名
+        topic: this.topicList[this.index].id,
+        visibility: this.rangeIndex + "",
+        isAnonymous: this.isAnonymous, // FIXME: 处理是否匿名
       };
       publishPostReq(data).then((data) => {
         uni.showToast({
           title: "发布成功",
         });
+        setTimeout(() => {
+          uni.navigateTo({
+            url: "/pages/postList/index",
+          });
+        }, 800);
+      });
+    },
+    selectPic() {
+      uni.chooseImage({
+        count: 3,
+        sourceType: ["album"],
+        success(res) {
+          console.log(
+            "%c [ res ]-130",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            res
+          );
+        },
+      });
+    },
+    fetchPostTopicList() {
+      getPostTopicList().then(({ code, data }) => {
+        if (code === 0) {
+          this.topicList = data.list;
+          console.log(
+            "%c [ this.topicList ]-113",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            this.topicList
+          );
+        }
       });
     },
     inputChange: function (e) {
@@ -102,6 +156,50 @@ export default {
     },
     bindRangePickerChange: function (e) {
       this.rangeIndex = e.detail.value;
+    },
+    uploadSelect(res) {
+      this.uploadImg(res.tempFiles);
+      console.log(
+        "%c [ res ]-146",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        res
+      );
+    },
+    uploadImg(tempFilePaths) {
+      uni.uploadFile({
+        url: "http://101.200.120.4:8081/api/oss/upload",
+        filePath: tempFilePaths[0],
+        name: "xxx",
+        success(data) {
+          console.log(
+            "%c [  ]-160",
+            "font-size:13px; background:pink; color:#bf2c9f;"
+          );
+        },
+        fail(error) {
+          console.log(
+            "%c [ error ]-165",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            error
+          );
+        },
+      });
+      console.log(
+        "%c [ tempFilePaths ]-154",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        tempFilePaths
+      );
+      // const fileBinary = uni.readFile({
+      //   filePath: tempFilePaths[0], // 图片文件路径
+      //   encoding: "base64", // 文件内容的编码格式，这里使用base64编码
+      // });
+      // uploadImgToOss(fileBinary).then((data) => {
+      //   console.log(
+      //     "%c [ data ]-155",
+      //     "font-size:13px; background:pink; color:#bf2c9f;",
+      //     data
+      //   );
+      // });
     },
   },
 };
