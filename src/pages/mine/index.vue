@@ -65,12 +65,11 @@
         <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
       </view>
     </view>
-    <view class="logout"> 退出登录 </view>
+    <view class="logout" @click="logout"> 退出登录 </view>
   </view>
 </template>
 
 <script>
-import { wechatLogin } from "@/api/mine";
 export default {
   data() {
     return {};
@@ -93,9 +92,9 @@ export default {
         url: "/pages/userInfo/index",
       });
     },
-    updateAvatar() {
-      console.warn(111);
-    }
+    logout() {
+      
+    },
   },
 };
 </script>
