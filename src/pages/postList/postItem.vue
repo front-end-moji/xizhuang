@@ -1,7 +1,7 @@
 <template>
   <view class="postItem">
     <view class="postHeader">
-      <avatar :url="postInfo.avatar"></avatar>
+      <avatar :url="postInfo.avatar || ''"></avatar>
       <view class="info">
         <text class="name">章鱼不太懒</text>
         <view class="detailInfo">
@@ -114,7 +114,7 @@ export default {
   },
   computed: {
     topicText() {
-      return find(this.topicList, { id: this.postInfo.topic }).name;
+      return find(this.topicList, { id: this.postInfo.topic })?.name || "";
     },
   },
   components: { Avatar },
@@ -125,8 +125,14 @@ export default {
       this.images = media;
       this.postContent = text;
     }
-
     this.calcIsExpand();
+  },
+  updated() {
+    if (this.postInfo.content) {
+      const { text, media } = JSON.parse(this.postInfo.content);
+      this.images = media;
+      this.postContent = text;
+    }
   },
   methods: {
     calcIsExpand() {

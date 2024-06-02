@@ -1,6 +1,10 @@
 <template>
   <view class="details-wrap">
-    <post-item :isDetail="true"></post-item>
+    <post-item
+      :isDetail="true"
+      :topicList="topicList"
+      :postInfo="postInfo"
+    ></post-item>
   </view>
 </template>
 
@@ -11,7 +15,7 @@ import { getPostDetailById } from "@/api/post";
 export default {
   data() {
     return {
-      contentStr: "",
+      postInfo: null,
     };
   },
   components: { postItem },
@@ -20,9 +24,14 @@ export default {
   },
   methods: {
     getPostDetail() {
-      getPostDetailById({ id: "1" }).then(({ data, code }) => {
+      getPostDetailById({ id: "20" }).then(({ data, code }) => {
         if (code === 0) {
-          this.contentStr = data.content;
+          console.log(
+            "%c [ data ]-26",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            data
+          );
+          this.postInfo = data;
         }
       });
     },

@@ -7,9 +7,7 @@
     leftWidth="100%"
   >
     <template v-slot:left>
-      <view class="schoolWrap"
-        @click="updateSchool"
-        >
+      <view class="schoolWrap" @click="updateSchool">
         <uni-icons type="location" size="26"></uni-icons>
         <text
           class="schoolName"
@@ -92,7 +90,7 @@
 </template>
 
 <script>
-import { getPostList } from "@/api/home";
+import { getPostList } from "@/api/post";
 import { NAV_LIST } from "./constant";
 
 export default {
@@ -106,15 +104,23 @@ export default {
     };
   },
   onLoad: function (option) {
-    getPostList({
-      authorId: "111",
-      isSearchLatestPost: 1,
-      limit: 10,
-      page: 1,
-      visibility: "aaa",
-    })
-      .then((data) => {})
-      .catch((error) => {});
+    // getPostList({
+    //   isSearchLatestPost: 1,
+    //   limit: 10,
+    //   page: 1,
+    // })
+    //   .then(({ data, code }) => {
+    //   })
+    //   .catch((error) => {});
+  },
+  mounted() {
+    // getPostList({
+    //   isSearchLatestPost: 1,
+    //   limit: 10,
+    //   page: 1,
+    // })
+    //   .then(({ data, code }) => {})
+    //   .catch((error) => {});
   },
   methods: {
     navToPostLit: () => {
@@ -137,7 +143,7 @@ export default {
           url: "/pages/school/index",
         });
       }
-    }
+    },
   },
 };
 </script>

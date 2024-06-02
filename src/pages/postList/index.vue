@@ -92,7 +92,6 @@ export default {
       activeTab: '',
       viewRange: 'ALL', // ALL or ONLY
       viewType: '最新', // LATEST or HOT
-      isSearchLatestPost: 1, // 1 => 最新； 0 => 最热
       background: ['color1', 'color2', 'color3'],
       indicatorDots: true,
       autoplay: true,
@@ -130,6 +129,7 @@ export default {
     },
     changeViewRange() {
       this.viewRange = this.viewRange === 'ALL' ? 'ONLY' : 'ALL'
+      this.fetchPostList()
     },
     changeViewType(viewType) {
       if (this.viewType === viewType) {
@@ -139,15 +139,17 @@ export default {
       this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0})
     },
     fetchPostList(params) {
-      // this.store.state.user
-      console.log('%c [ this.store.state.user ]-138', 'font-size:13px; background:pink; color:#bf2c9f;', this.$store.state.user)
       const { school } = this.$store.state.user
-      const paramsObj = {
-        isSearchLatestPost: 1,
+      let paramsObj = {
+        isSearchLatestPost: this.viewType === '最新' ? 1 : 0,
         limit: 10,
         page: 1,
         topic: this.activeTab,
+        visible: school.id,
         ...params
+      }
+      if (this.viewRange === 'ALL') {
+        delete paramsObj.visible
       }
       getPostList(paramsObj)
         .then(({ data, code }) => {
@@ -295,7 +297,7 @@ export default {
 
 .newPost {
   background: #5dc588;
-  border: 1px solid black;
+  border: 1px solid #ccc;
   padding: 4px 6px;
   border-radius: 2px;
   display: flex;
