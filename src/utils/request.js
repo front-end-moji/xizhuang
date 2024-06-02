@@ -2,7 +2,7 @@
 import { stringify } from "qs";
 import store from "@/store";
 
-const BASE_URL = "http://101.200.120.4:8081/api/";
+const BASE_URL = "https://www.dqxyq.com/api/";
 
 // http://101.200.120.4:8081/renren-api/posts/page
 

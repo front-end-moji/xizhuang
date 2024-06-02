@@ -30,21 +30,33 @@ const store = new Vuex.Store({
   },
   actions: {
     login({ commit }) {
-      wx.login().then((res) => {
-        wechatLogin(res.code).then((res) => {
-          const { code } = res;
-          if (code === 0) {
-            const { user, token } = res.data;
-            commit("setUser", user);
-            commit("setToken", token);
-            wx.setStorage({
-              key: "isLogin",
-              data: true,
+      wx.login()
+        .then((res) => {
+          wechatLogin(res.code)
+            .then((res) => {
+              const { code } = res;
+              if (code === 0) {
+                const { user, token } = res.data;
+                commit("setUser", user);
+                commit("setToken", token);
+                wx.setStorage({
+                  key: "isLogin",
+                  data: true,
+                });
+                wx.navigateBack();
+              }
+            })
+            .catch((err) => {
+              wx.showToast({
+                title: JSON.stringify(err),
+              });
             });
-            wx.navigateBack();
-          }
+        })
+        .catch((err) => {
+          wx.showToast({
+            title: '2' + JSON.stringify(err),
+          });
         });
-      });
     },
 
     updateUser({ commit }, user) {
