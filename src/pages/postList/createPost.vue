@@ -60,7 +60,11 @@
         <uni-icons type="staff-filled" size="20" color="#f9d786"></uni-icons>
         匿名发布
       </view>
-      <switch :checked="isAnonymous" style="transform: scale(0.6)" />
+      <switch
+        :checked="isAnonymous"
+        @change="changeIsAnonymous"
+        style="transform: scale(0.6)"
+      />
     </view>
 
     <view class="submitBtn">
@@ -98,6 +102,9 @@ export default {
   },
   mounted() {},
   methods: {
+    changeIsAnonymous(e) {
+      this.isAnonymous = e.detail.value;
+    },
     publish: function () {
       const content = JSON.stringify({
         text: this.postContent,
@@ -157,17 +164,7 @@ export default {
           token: this.$store.state.token,
         },
         success: (res) => {
-          console.log(
-            "%c [ res ]-160",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            res
-          );
           const src = JSON.parse(res.data).data;
-          console.log(
-            "%c [ src ]-161",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            src
-          );
           this.postImgSrc.push(src);
         },
       });

@@ -1,13 +1,17 @@
 <template>
   <view class="postItem">
     <view class="postHeader">
-      <avatar :url="postInfo.avatar || ''"></avatar>
+      <avatar :url="userInfo.avatar || ''"></avatar>
       <view class="info">
-        <text class="name">章鱼不太懒</text>
+        <text class="name">{{ userInfo.username }}</text>
         <view class="detailInfo">
-          <text class="date">14个小时前</text>
-          <view class="position">
-            <uni-icons type="location" size="16"></uni-icons>黑龙江大学</view
+          <text class="date">{{ timeDiff }}</text>
+          <view
+            class="position"
+            :style="postInfo.isAnonymous ? { display: 'none' } : null"
+          >
+            <uni-icons type="location" size="16"></uni-icons
+            >{{ schoolInfo.name }}</view
           >
         </view>
       </view>
@@ -83,6 +87,7 @@
 import { Avatar } from "../../components/avatar.vue";
 import { deletePost } from "@/api/post";
 import { find } from "lodash";
+import { getDateDiff } from "@/utils/index";
 
 export default {
   name: "PostItem",
@@ -92,6 +97,9 @@ export default {
       needExpand: false,
       hasExpand: false,
       postContent: "",
+      userInfo: {},
+      schoolInfo: {},
+      timeDiff: "",
     };
   },
   props: {
@@ -121,26 +129,30 @@ export default {
   onLoad: function (option) {},
   watch: {
     postInfo(newVal) {
-      if (newVal.content) {
-        this.initInfo(newVal.content);
-      }
+      this.initInfo(newVal);
     },
   },
   mounted() {
-    if (this.postInfo.content) {
-      this.initInfo(this.postInfo.content);
+    if (this.postInfo) {
+      this.initInfo(this.postInfo);
     }
     this.calcIsExpand();
   },
   methods: {
     initInfo(data) {
-      try {
-        const { text, media } = JSON.parse(data);
-        this.images = media;
-        this.postContent = text;
-      } catch (e) {
-        this.images = [];
-        this.postContent = data;
+      this.userInfo = data.user;
+      this.schoolInfo = data.school;
+      this.timeDiff = getDateDiff(data.gmtCreate);
+
+      if (data.content) {
+        try {
+          const { text, media } = JSON.parse(data.content);
+          this.images = media;
+          this.postContent = text;
+        } catch (e) {
+          this.images = [];
+          this.postContent = data.content;
+        }
       }
     },
     calcIsExpand() {
@@ -223,6 +235,7 @@ export default {
 .detailInfo {
   display: flex;
   align-items: center;
+  margin-top: 2px;
 }
 
 .name {
