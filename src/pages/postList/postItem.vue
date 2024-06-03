@@ -119,22 +119,30 @@ export default {
   },
   components: { Avatar },
   onLoad: function (option) {},
+  watch: {
+    postInfo(newVal) {
+      if (newVal.content) {
+        this.initInfo(newVal.content);
+      }
+    },
+  },
   mounted() {
     if (this.postInfo.content) {
-      const { text, media } = JSON.parse(this.postInfo.content);
-      this.images = media;
-      this.postContent = text;
+      this.initInfo(this.postInfo.content);
     }
     this.calcIsExpand();
   },
-  updated() {
-    if (this.postInfo.content) {
-      const { text, media } = JSON.parse(this.postInfo.content);
-      this.images = media;
-      this.postContent = text;
-    }
-  },
   methods: {
+    initInfo(data) {
+      try {
+        const { text, media } = JSON.parse(data);
+        this.images = media;
+        this.postContent = text;
+      } catch (e) {
+        this.images = [];
+        this.postContent = data;
+      }
+    },
     calcIsExpand() {
       const query = uni.createSelectorQuery().in(this);
       query
@@ -170,9 +178,9 @@ export default {
         current: this.images[index],
       });
     },
-    navToPostDetail: () => {
+    navToPostDetail() {
       uni.navigateTo({
-        url: "/pages/postList/details",
+        url: `/pages/postList/details?id=${this.postInfo.id}`,
       });
     },
   },

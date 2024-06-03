@@ -20,17 +20,13 @@ export default {
   },
   components: { postItem },
   onLoad: function (option) {
-    this.getPostDetail();
+    const id = JSON.parse(decodeURIComponent(option.id));
+    this.getPostDetail(id);
   },
   methods: {
-    getPostDetail() {
-      getPostDetailById({ id: "20" }).then(({ data, code }) => {
+    getPostDetail(id) {
+      getPostDetailById({ id }).then(({ data, code }) => {
         if (code === 0) {
-          console.log(
-            "%c [ data ]-26",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            data
-          );
           this.postInfo = data;
         }
       });

@@ -23,10 +23,6 @@
   </uni-nav-bar>
   <view class="wrap">
     <view class="container">
-      <!-- <view class="inputWrap">
-        <input type="text" />
-      </view> -->
-
       <view class="swiperContainer">
         <img src="../../static/banner.png" class="bannerImg" alt="" />
       </view>
@@ -48,11 +44,16 @@
       <text class="hotTitle">热门话题</text>
 
       <view class="hotTopicWrap">
-        <view class="hotTopicItem" @click="navToPostDetail">
+        <view
+          class="hotTopicItem"
+          v-for="item in postList"
+          :key="item.id"
+          @click="navToPostDetail(item.id)"
+        >
           <view class="hotLeft">
-            <view class="hotTitle"> 这成为富豪们的游乐场 </view>
+            <view class="hotTitle"> 暂无标题 </view>
             <view class="desc">
-              据“公开的秘密”組织初步估计，美国2022年中期选举的“
+              {{ getPostInfo(item).text }}
             </view>
             <view class="info">
               <view class="date">2024.05.24</view>
@@ -62,25 +63,11 @@
           </view>
           <view class="hotRight">
             <view class="hotImg">
-              <img class="homeImg" alt="" />
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="hotTopicWrap">
-        <view class="hotTopicItem" @click="navToPostDetail">
-          <view class="hotLeft">
-            <view class="hotTitle"> java开发者的福音 </view>
-            <view class="desc"> java开发者的福音，后续更新，敬请期待 </view>
-            <view class="info">
-              <view class="date">2024.05.24</view>
-              <view class="split">|</view>
-              <view class="viewCount">6次阅读</view>
-            </view>
-          </view>
-          <view class="hotRight">
-            <view class="hotImg">
-              <img class="homeImg" alt="" />
+              <img
+                class="homeImg"
+                :src="getPostInfo(item).media[0] || '../../static/banner.png'"
+                alt=""
+              />
             </view>
           </view>
         </view>
@@ -92,6 +79,7 @@
 <script>
 import { getPostList } from "@/api/post";
 import { NAV_LIST } from "./constant";
+import { isEmpty } from "lodash";
 
 export default {
   data() {
@@ -101,36 +89,61 @@ export default {
       autoplay: true,
       interval: 2000,
       duration: 500,
+      postList: [],
     };
   },
-  onLoad: function (option) {
-    // getPostList({
-    //   isSearchLatestPost: 1,
-    //   limit: 10,
-    //   page: 1,
-    // })
-    //   .then(({ data, code }) => {
-    //   })
-    //   .catch((error) => {});
+  computed: {
+    token() {
+      return this.$store.state.token;
+    },
   },
-  mounted() {
-    // getPostList({
-    //   isSearchLatestPost: 1,
-    //   limit: 10,
-    //   page: 1,
-    // })
-    //   .then(({ data, code }) => {})
-    //   .catch((error) => {});
+  watch: {
+    token(newVal) {
+      if (newVal) {
+        getPostList({
+          isSearchLatestPost: 1,
+          limit: 10,
+          page: 1,
+        })
+          .then(({ data, code }) => {
+            if ((code === 0) & !isEmpty(data.list)) {
+              this.postList = data.list.slice(2);
+            }
+          })
+          .catch((error) => {});
+      }
+    },
   },
+  onLoad: function (option) {},
   methods: {
+    getPostInfo(item) {
+      let res = { text: "", media: [] };
+      if (item) {
+        try {
+          const data = JSON.parse(item.content);
+          if (data && data.text) {
+            res = {
+              text: data.text,
+              media: data.media,
+            };
+          }
+        } catch (e) {
+          res = {
+            text: item.content,
+            media: [],
+          };
+        }
+        return res;
+      }
+    },
     navToPostLit: () => {
       uni.navigateTo({
         url: "/pages/postList/index",
       });
     },
-    navToPostDetail: () => {
+    navToPostDetail: (id) => {
       uni.navigateTo({
-        url: "/pages/postList/details",
+        url: `/pages/postList/details?id=${id}`,
       });
     },
     updateSchool() {
