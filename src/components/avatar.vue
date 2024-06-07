@@ -1,5 +1,5 @@
 <template>
-  <view class="wrap">
+  <view class="wrap" :style="styleObj">
     <img class="img" :src="url" alt="" />
   </view>
 </template>
@@ -12,6 +12,7 @@ export default {
   },
   props: {
     url: "",
+    styleObj: {},
   },
 };
 </script>

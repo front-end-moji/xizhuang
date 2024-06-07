@@ -70,7 +70,13 @@
             <uni-icons type="redo" size="20" color="#111111"></uni-icons>
           </button>
 
-          <uni-icons type="redo" size="20" color="#111111" v-if="!isDetail" @click="navToPostDetail"></uni-icons>
+          <uni-icons
+            type="redo"
+            size="20"
+            color="#111111"
+            v-if="!isDetail"
+            @click="navToPostDetail"
+          ></uni-icons>
 
           <uni-icons
             @click="navToPostDetail"
@@ -212,7 +218,6 @@ export default {
   flex-direction: column;
   font-size: 12px;
   justify-content: center;
-  border-bottom: 1px solid #ccc;
   padding: 12px 0;
 }
 

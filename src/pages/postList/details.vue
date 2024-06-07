@@ -1,27 +1,74 @@
 <template>
   <view class="details-wrap">
-    <post-item
-      :isDetail="true"
-      :topicList="topicList"
-      :postInfo="postInfo"
-    ></post-item>
+    <view class="content-wrap">
+      <post-item :isDetail="true" :topicList="topicList" :postInfo="postInfo" />
+    </view>
+    <view class="comment-list">
+      <view class="comment-wrap" v-if="commentList.length > 0">
+        <view class="comment-title">全部评论</view>
+
+        <view class="comment-item" v-for="item in commentList" :key="item.id">
+          <avatar
+            :url="item.fromUser.avatar"
+            :styleObj="{ width: '24px', height: '24px' }"
+          ></avatar>
+          <view class="user-info">
+            <view class="header">
+              <text class="comment-user">{{ item.fromUser.username }}</text>
+              <text class="comment-date">{{
+                getDateDiff(item.gmtCreate)
+              }}</text>
+            </view>
+
+            <view class="content"> {{ item.content }} </view>
+          </view>
+          <view class="like"
+            ><uni-icons type="heart" size="20" color="#111111"></uni-icons
+          ></view>
+        </view>
+      </view>
+
+      <view class="comment-empty-wrap" v-else>
+        <text>暂无评论~</text>
+      </view>
+    </view>
+    <view class="comment-btn-wrap">
+      <uni-icons type="image" size="20" color="#f9d786"></uni-icons>
+      <textarea
+        class="commentTextarea"
+        placeholder="请输入您的想法"
+        rows="1"
+        v-model="commentContent"
+        maxlength="80"
+      ></textarea>
+      <view class="send-btn" @click="sendComment"> 发送 </view>
+    </view>
   </view>
 </template>
 
 <script>
 import { postItem } from "./postItem.vue";
 import { getPostDetailById } from "@/api/post";
+import { saveComment, getCommentList } from "@/api/comment";
+import { Avatar } from "../../components/avatar.vue";
+import { isEmpty } from "lodash";
+import { getDateDiff } from "@/utils/index";
 
 export default {
   data() {
     return {
       postInfo: null,
+      commentContent: "",
+      postId: "",
+      commentList: [],
     };
   },
-  components: { postItem },
+  components: { postItem, Avatar },
   onLoad: function (option) {
     const id = JSON.parse(decodeURIComponent(option.id));
+    this.postId = id;
     this.getPostDetail(id);
+    this.getPageList();
   },
   methods: {
     getPostDetail(id) {
@@ -29,6 +76,29 @@ export default {
         if (code === 0) {
           this.postInfo = data;
         }
+      });
+    },
+    getDateDiff,
+    getPageList() {
+      getCommentList({ postId: this.postId, limit: 10, page: 1 }).then(
+        ({ code, data }) => {
+          if (data && !isEmpty(data.list)) {
+            this.commentList = data.list;
+          }
+        }
+      );
+    },
+    sendComment() {
+      const params = {
+        postId: this.postId,
+        content: this.commentContent,
+      };
+      saveComment(params).then(({ code, data }) => {
+        uni.showToast({
+          title: "发布成功",
+        });
+        this.getPageList();
+        this.commentContent = "";
       });
     },
   },
@@ -40,6 +110,105 @@ export default {
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-wrap {
+  background: white;
   padding: 0 16px;
+  flex-shrink: 0;
+}
+
+.comment-list {
+  margin-top: 18px;
+  width: 100%;
+  background: white;
+  flex: 1;
+  overflow: hidden;
+}
+
+.comment-wrap {
+  padding: 12px;
+  max-height: calc(100% - 60px);
+  overflow-y: auto;
+}
+
+.comment-btn-wrap {
+  background: white;
+  height: 60px;
+  width: 100vw;
+  border-top: 1px solid #ccc;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 0 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.commentTextarea {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 200px;
+  height: 24px;
+  font-size: 12px;
+  line-height: 16px;
+  margin: 0 6px;
+  padding: 4px 6px 0 6px;
+  box-sizing: border-box;
+}
+
+.send-btn {
+  width: 80px;
+  height: 26px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background-color: #d6feda;
+}
+
+.content-wrap {
+  background: white;
+  overflow: hidden;
+}
+
+.comment-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.comment-item {
+  display: flex;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ccc;
+}
+
+.user-info {
+  flex: 1;
+  margin: 0 12px;
+}
+
+.header {
+  display: flex;
+  align-content: center;
+  color: #ccc;
+}
+
+.comment-user {
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.comment-date {
+  font-size: 14px;
 }
 </style>

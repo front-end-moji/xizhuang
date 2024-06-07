@@ -146,12 +146,12 @@ export default {
         limit: 10,
         page: 1,
         topic: this.activeTab,
-        visibility: school.id,
+        visibility: this.viewRange === 'ALL' ? 1 : 0,
         ...params
       }
-      if (this.viewRange === 'ALL') {
-        delete paramsObj.visibility
-      }
+      // if (this.viewRange === 'ALL') {
+      //   delete paramsObj.visibility
+      // }
       getPostList(paramsObj)
         .then(({ data, code }) => {
           if (code === 0) {
