@@ -100,3 +100,10 @@ export const deletePost = function (id) {
     method: "POST",
   });
 };
+
+export function querySetTopPaymentList() {
+  return request({
+    url: 'topoption/page',
+    method: 'GET',
+  });
+}

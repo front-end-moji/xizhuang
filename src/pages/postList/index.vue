@@ -64,6 +64,7 @@
               :key="item.id"
               :deleteCb="fetchPostList"
               :topicList="topicList"
+              :isDetail="false"
             ></post-item>
           </view>
         </view>
@@ -81,7 +82,7 @@
 </template>
 
 <script lang="js">
-import PostItem from "./postItem.vue";
+import postItem from "./postItem.vue";
 import { getPostList, getPostTopicList } from "@/api/post";
 import { isEmpty } from 'lodash'
 
@@ -108,7 +109,7 @@ export default {
       topicList: []
     };
   },
-  components: {PostItem},
+  components: {postItem},
   onLoad: function (option) {
     this.fetchPostTopicList()
   },

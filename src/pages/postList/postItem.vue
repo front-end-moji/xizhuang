@@ -8,7 +8,9 @@
           <text class="date">{{ timeDiff }}</text>
           <view
             class="position"
-            :style="postInfo.isAnonymous ? { display: 'none' } : null"
+            :style="
+              postInfo && postInfo.isAnonymous ? { display: 'none' } : null
+            "
           >
             <uni-icons type="location" size="16"></uni-icons
             >{{ schoolInfo.name }}</view
@@ -63,12 +65,13 @@
             color="#111111"
             class="edit-icon"
           ></uni-icons>
-          <uni-icons
-            @click="navToPostDetail"
-            type="redo"
-            size="20"
-            color="#111111"
-          ></uni-icons>
+
+          <button open-type="share" class="shareBtn" v-if="isDetail">
+            <uni-icons type="redo" size="20" color="#111111"></uni-icons>
+          </button>
+
+          <uni-icons type="redo" size="20" color="#111111" v-if="!isDetail" @click="navToPostDetail"></uni-icons>
+
           <uni-icons
             @click="navToPostDetail"
             type="chat"
@@ -122,7 +125,7 @@ export default {
   },
   computed: {
     topicText() {
-      return find(this.topicList, { id: this.postInfo.topic })?.name || "";
+      return find(this.topicList, { id: this.postInfo?.topic })?.name || "";
     },
   },
   components: { Avatar },
@@ -349,5 +352,22 @@ export default {
 
 .edit-icon {
   margin: 0 6px;
+}
+
+.shareBtn {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+}
+
+.shareBtn::after {
+  border: none;
+}
+
+.action-btns {
+  display: flex;
 }
 </style>
