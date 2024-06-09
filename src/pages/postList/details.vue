@@ -34,52 +34,58 @@
     </view>
 
     <view class="content-wrap">
-      <post-item :isDetail="true" :topicList="topicList" :postInfo="postInfo" />
+      <post-item
+        :isDetail="true"
+        :topicList="topicList"
+        :postInfo="postInfo"
+        :updateList="() => getPostDetail(postInfo.id)"
+      />
     </view>
     <view class="comment-list">
-      <view class="comment-wrap" v-if="commentList.length > 0">
-        <view class="comment-title">全部评论</view>
+      <view class="comment">
+        <view class="comment-wrap" v-if="commentList.length > 0">
+          <view class="comment-title">全部评论</view>
 
-        <view
-          class="comment-item"
-          v-for="item in commentList"
-          :key="item.id"
-          @click="onReplyUser(item)"
-        >
-          <avatar
-            :url="item.fromUser.avatar"
-            :styleObj="{ width: '24px', height: '24px' }"
-          ></avatar>
-          <view class="user-info">
-            <view class="comment-header">
-              <text class="comment-user">{{ genUserNameText(item) }}</text>
-              <text class="comment-date">{{
-                getDateDiff(item.gmtCreate)
-              }}</text>
+          <view
+            class="comment-item"
+            v-for="item in commentList"
+            :key="item.id"
+            @click="onReplyUser(item)"
+          >
+            <avatar
+              :url="item.fromUser.avatar"
+              :styleObj="{ width: '24px', height: '24px' }"
+            ></avatar>
+            <view class="user-info">
+              <view class="comment-header">
+                <text class="comment-user">{{ genUserNameText(item) }}</text>
+                <text class="comment-date">{{
+                  getDateDiff(item.gmtCreate)
+                }}</text>
+              </view>
+
+              <view class="content"> {{ item.content }} </view>
             </view>
-
-            <view class="content"> {{ item.content }} </view>
           </view>
         </view>
-      </view>
 
-      <view class="comment-empty-wrap" v-else>
-        <text class="empty-text">暂时没有人评论，快来抢沙发~</text>
+        <view class="comment-empty-wrap" v-else>
+          <text class="empty-text">暂时没有人评论，快来抢沙发~</text>
+        </view>
       </view>
     </view>
-    <view class="comment-mask" @click="closeMask" v-if="replyUser" />
     <view class="comment-btn-wrap">
       <uni-icons type="image" size="20" color="#f9d786"></uni-icons>
-      <textarea
+      <input
         class="commentTextarea"
         :placeholder="placeholder"
-        rows="1"
         v-model="commentContent"
         maxlength="80"
-        :autofocus="autofocus"
-      ></textarea>
+        cursor-spacing="10"
+      />
       <view class="send-btn" @click="sendComment"> 发送 </view>
     </view>
+    <view class="comment-mask" @click="closeMask" v-if="replyUser" />
   </view>
 </template>
 
@@ -257,39 +263,49 @@ export default {
   background: white;
   flex: 1;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+.comment {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .comment-wrap {
-  padding: 12px;
-  max-height: calc(100% - 60px);
+  padding: 0 12px;
+  height: 100%;
   overflow-y: auto;
 }
 
 .comment-btn-wrap {
+  position: fix;
+  bottom: 0;
   background: white;
   height: 60px;
   width: 100vw;
   border-top: 1px solid #ccc;
-  position: absolute;
-  bottom: 0;
-  left: 0;
   padding: 0 6px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  position: relative;
   z-index: 100;
 }
 
 .commentTextarea {
-  border: 1px solid #ccc;
   border-radius: 8px;
-  width: 200px;
   height: 24px;
-  font-size: 12px;
-  line-height: 16px;
+  flex: 1;
+  border: 1px solid #ccc;
+  font-size: 14px;
   margin: 0 6px;
-  padding: 4px 6px 0 6px;
+  padding: 0 6px;
   box-sizing: border-box;
+}
+
+.commentTextarea::placeholder {
+  font-size: 14px;
 }
 
 .send-btn {
@@ -408,7 +424,7 @@ export default {
   background: black;
   opacity: 0.5;
   z-index: 99;
-  top: 0;
+  bottom: 0;
   left: 0;
 }
 </style>

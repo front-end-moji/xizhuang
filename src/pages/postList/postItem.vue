@@ -224,9 +224,17 @@ export default {
     },
     onLickClick(isLike) {
       if (!isLike) {
-        likePost({ postId: this.postInfo.id }).then(({ code, data }) => {
-          this.updateList();
-        });
+        likePost({ postId: this.postInfo.id })
+          .then(({ code, data }) => {
+            this.updateList();
+          })
+          .catch((error) => {
+            console.log(
+              "%c [ error ]-230",
+              "font-size:13px; background:pink; color:#bf2c9f;",
+              error
+            );
+          });
       } else {
         // 取消点赞
         unlikePost(this.postInfo.id).then(({ code, data }) => {

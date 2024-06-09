@@ -106,7 +106,7 @@ export default {
         })
           .then(({ data, code }) => {
             if ((code === 0) & !isEmpty(data.list)) {
-              this.postList = data.list.slice(2);
+              this.postList = data.list;
             }
           })
           .catch((error) => {});
