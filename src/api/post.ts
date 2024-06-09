@@ -103,7 +103,18 @@ export const deletePost = function (id) {
 
 export function querySetTopPaymentList() {
   return request({
-    url: 'topoption/page',
-    method: 'GET',
+    url: "topoption/page",
+    method: "GET",
+  });
+}
+
+export function getPayParams({ postId, topOptionId }) {
+  return request({
+    url: "pay/post",
+    method: "POST",
+    data: {
+      postId,
+      topOptionId,
+    },
   });
 }

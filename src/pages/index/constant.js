@@ -1,6 +1,6 @@
 export const NAV_LIST = [
   {
-    title: "贴吧",
+    title: "表白墙",
     icon: "../../static/post.png",
     path: "/pages/postList/index",
   },

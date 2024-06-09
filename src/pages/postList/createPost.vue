@@ -1,26 +1,5 @@
 <template>
   <view class="wrap">
-    <view v-if="setTopVisible">
-      <view class="setTopDesc">当前学校置顶你的帖子，请选择时间：</view>
-      <view class="paymentWrap">
-        <view
-          v-for="(item, index) in setTopPaymentList"
-          :key="index"
-          :class="{ active: selectedSetTop === item.id, paymentItem: true }"
-          @click="selectSetTop(item.id)"
-        >
-          <view>
-            <view> ￥{{ item.amount }} </view>
-            <view> {{ item.duration }} 分钟 </view>
-          </view>
-        </view>
-      </view>
-    </view>
-    <view class="header">
-      <view class="left" @click="toggleSetTopVisible">我要置顶</view>
-      <text class="right">让更多人听到你的声音~</text>
-    </view>
-
     <view class="formsWrap">
       <textarea
         class="textarea"
@@ -95,8 +74,6 @@ import { POST_RANGE_LIST } from "./constant";
 import { publishPostReq } from "../../api/post";
 import {
   getPostTopicList,
-  uploadImgToOss,
-  querySetTopPaymentList,
 } from "@/api/post";
 
 export default {
@@ -109,9 +86,6 @@ export default {
       rangeList: POST_RANGE_LIST,
       topicList: [],
       postImgSrc: [],
-      setTopVisible: false,
-      setTopPaymentList: [],
-      selectedSetTop: undefined,
     };
   },
   computed: {
@@ -122,7 +96,6 @@ export default {
   components: { uniForms },
   onLoad: function (option) {
     this.fetchPostTopicList();
-    this.fetchSetTopPaymentList();
   },
   mounted() {},
   methods: {
@@ -193,17 +166,6 @@ export default {
         },
       });
     },
-    toggleSetTopVisible() {
-      this.setTopVisible = !this.setTopVisible;
-    },
-    fetchSetTopPaymentList() {
-      querySetTopPaymentList().then((res) => {
-        this.setTopPaymentList = res.data;
-      });
-    },
-    selectSetTop(id) {
-      this.selectedSetTop = id;
-    },
   },
 };
 </script>
@@ -218,22 +180,6 @@ export default {
   font-size: 14px;
 }
 
-.header {
-  display: flex;
-  font-size: 12px;
-  justify-content: space-between;
-  height: 40px;
-  align-items: center;
-  border-bottom: 1px solid #ccc;
-}
-
-.left {
-  color: #5dc588;
-}
-
-.right {
-  color: #ccc;
-}
 
 .textarea {
   margin: 12px 0;
@@ -324,26 +270,5 @@ export default {
   margin-left: 4px;
 }
 
-.paymentWrap {
-  display: flex;
-  margin-top: 20rpx;
-  color: #ccc;
-}
 
-.paymentItem {
-  border-radius: 12rpx;
-  border: 1px solid #ccc;
-  color: #ccc;
-  padding: 8rpx 18rpx;
-  margin-right: 20rpx;
-}
-
-.setTopDesc {
-  color: #ccc;
-}
-
-.active.paymentItem {
-  color: #5dc588;
-  border-color: #5dc588;
-}
 </style>

@@ -1,5 +1,38 @@
 <template>
   <view class="details-wrap">
+    <view class="setTopWrap" v-if="isAuthor">
+      <view v-if="setTopVisible" class="setTopContent">
+        <view class="setTopDesc">当前学校置顶你的帖子，请选择时间：</view>
+        <view class="paymentWrap">
+          <view
+            v-for="(item, index) in setTopPaymentList"
+            :key="index"
+            :class="{ active: selectedSetTop === item.id, paymentItem: true }"
+            @click="selectSetTop(item.id)"
+          >
+            <view>
+              <view> ￥{{ item.amount }} </view>
+              <view> {{ item.duration }} 分钟 </view>
+            </view>
+          </view>
+        </view>
+        <view class="paymentBtnWrap">
+          <button
+            type="primary"
+            @click="pay"
+            size="mini"
+            :disabled="payBtnDisabled"
+          >
+            支付
+          </button>
+        </view>
+      </view>
+      <view class="header">
+        <view class="left" @click="toggleSetTopVisible">我要置顶</view>
+        <text class="right">让更多人听到你的声音~</text>
+      </view>
+    </view>
+
     <view class="content-wrap">
       <post-item :isDetail="true" :topicList="topicList" :postInfo="postInfo" />
     </view>
@@ -53,6 +86,7 @@ import { saveComment, getCommentList } from "@/api/comment";
 import { Avatar } from "../../components/avatar.vue";
 import { isEmpty } from "lodash";
 import { getDateDiff } from "@/utils/index";
+import { querySetTopPaymentList, getPayParams } from "@/api/post";
 
 export default {
   data() {
@@ -61,7 +95,26 @@ export default {
       commentContent: "",
       postId: "",
       commentList: [],
+      setTopVisible: false,
+      setTopPaymentList: [],
+      selectedSetTop: undefined,
     };
+  },
+  computed: {
+    isAuthor() {
+      if (
+        this.postInfo &&
+        this.postInfo.authorId &&
+        this.$store.state.user &&
+        this.$store.state.user.id
+      ) {
+        return this.postInfo.authorId === this.$store.state.user.id;
+      }
+      return false;
+    },
+    payBtnDisabled() {
+      return this.selectedSetTop === undefined;
+    },
   },
   components: { postItem, Avatar },
   onLoad: function (option) {
@@ -69,6 +122,7 @@ export default {
     this.postId = id;
     this.getPostDetail(id);
     this.getPageList();
+    this.fetchSetTopPaymentList();
   },
   methods: {
     getPostDetail(id) {
@@ -99,6 +153,33 @@ export default {
         });
         this.getPageList();
         this.commentContent = "";
+      });
+    },
+    selectSetTop(id) {
+      this.selectedSetTop = id;
+    },
+    pay() {
+      if (!this.postInfo || !this.selectedSetTop) {
+        return;
+      }
+
+      getPayParams({
+        postId: this.postInfo.id,
+        topOptionId: this.selectedSetTop,
+      }).then((res) => {
+        console.log(
+          "%c 🐙[ res ]-170",
+          "font-size:13px; background:#FFE599; color:#FFB570;",
+          res
+        );
+      });
+    },
+    toggleSetTopVisible() {
+      this.setTopVisible = !this.setTopVisible;
+    },
+    fetchSetTopPaymentList() {
+      querySetTopPaymentList().then((res) => {
+        this.setTopPaymentList = res.data;
       });
     },
   },
@@ -210,5 +291,57 @@ export default {
 
 .comment-date {
   font-size: 14px;
+}
+.paymentWrap {
+  display: flex;
+  margin-top: 20rpx;
+  color: #ccc;
+  padding: 10rpx 18rpx;
+}
+
+.paymentItem {
+  border-radius: 12rpx;
+  border: 1px solid #ccc;
+  color: #ccc;
+  padding: 8rpx 18rpx;
+  margin-right: 20rpx;
+}
+
+.setTopDesc {
+  color: #ccc;
+  padding: 10rpx 18rpx;
+}
+
+.active.paymentItem {
+  color: #5dc588;
+  border-color: #5dc588;
+}
+
+.header {
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+  height: 40px;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 0 16rpx;
+}
+
+.left {
+  color: #5dc588;
+}
+
+.right {
+  color: #ccc;
+}
+
+.paymentBtnWrap {
+  float: right;
+  margin-right: 10rpx;
+  overflow: hidden;
+}
+
+.setTopContent {
+  overflow: hidden;
 }
 </style>

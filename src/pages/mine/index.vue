@@ -99,9 +99,19 @@ export default {
       });
     },
     go2School() {
-      wx.navigateTo({
-        url: "/pages/school/index",
-      });
+      if (!this.$store.state.user) {
+        uni.showToast({
+          title: "请先登录",
+        });
+      } else if (!this.$store.state.user.school) {
+        wx.navigateTo({
+          url: "/pages/school/index",
+        });
+      } else {
+        uni.showToast({
+          title: "已绑定学校",
+        });
+      }
     },
   },
 };
