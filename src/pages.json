@@ -65,6 +65,12 @@
       "style": {
         "navigationBarTitleText": "绑定学校"
       }
+    },
+    {
+      "path": "pages/authentication/index",
+      "style": {
+        "navigationBarTitleText": "学生认证"
+      }
     }
   ],
   "globalStyle": {

@@ -37,6 +37,19 @@
           <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
         </view>
       </view>
+      <view class="listItem" @click="go2Authentication">
+        <view>
+          <uni-icons type="auth" size="18" color="#444444"></uni-icons>
+          学生认证
+        </view>
+        <view>
+          <text v-if="!$store.state.user || $store.state.user.status !== 1 "
+            >暂未认证</text
+          >
+          <text v-else>已认证</text>
+          <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
+        </view>
+      </view>
       <view class="listItem">
         <view>
           <uni-icons type="cart" size="18" color="#444444"></uni-icons>
@@ -110,6 +123,21 @@ export default {
       } else {
         uni.showToast({
           title: "已绑定学校",
+        });
+      }
+    },
+    go2Authentication() {
+      if (!this.$store.state.user) {
+        uni.showToast({
+          title: "请先登录",
+        });
+      } else if (this.$store.state.user.status !== 1) {
+        wx.navigateTo({
+          url: "/pages/authentication/index",
+        });
+      } else {
+        uni.showToast({
+          title: "已认证",
         });
       }
     },

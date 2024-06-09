@@ -152,8 +152,6 @@ export default {
         this.commentContent = "";
       });
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
     selectSetTop(id) {
       this.selectedSetTop = id;
     },
@@ -191,14 +189,9 @@ export default {
         this.setTopPaymentList = res.data;
       });
     },
-=======
     // 点赞
     likeComment() {},
->>>>>>> 4a6a16f (feat: 处理评论)
-=======
     // 点赞
-    likeComment() {},
->>>>>>> 4a6a16f (feat: 处理评论)
   },
 };
 </script>

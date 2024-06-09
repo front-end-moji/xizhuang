@@ -14,11 +14,17 @@
     >
       <uni-list-item class="item">
         <template v-slot:header>
-          <text>{{ item.name }}</text>
+          <view class="wrap">
+            <image :src="item.logo" class="logo" />
+            <text>{{ item.name }}</text>
+          </view>
         </template>
         <template v-slot:body></template>
         <template v-slot:footer>
-          <uni-icons type="right" size="18" color="#444444"></uni-icons>
+          <view class="wrap">
+            <uni-icons type="right" size="18" color="#444444"></uni-icons>
+          </view>
+          
         </template>
       </uni-list-item>
     </view>
@@ -51,5 +57,14 @@ export default {
 <style>
 .current {
   padding: 20rpx;
+}
+.logo {
+  width: 100rpx;
+  height: 100rpx;
+  margin-right: 40rpx;
+}
+.wrap {
+  display: flex;
+  align-items: center;
 }
 </style>

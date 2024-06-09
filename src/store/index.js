@@ -60,12 +60,13 @@ const store = new Vuex.Store({
     },
 
     updateUser({ commit }, user) {
-      const { avatar, name, school, mobile } = user;
+      const { avatar, name, school, mobile, verifyInfo } = user;
       updateUser({
         avatar,
         name,
         mobile,
         school: school ? school.id : undefined,
+        verifyInfo,
       }).then((res) => {
         const { code } = res;
         if (code === 0) {
