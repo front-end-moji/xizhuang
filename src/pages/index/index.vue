@@ -56,9 +56,7 @@
               {{ getPostInfo(item).text }}
             </view>
             <view class="info">
-              <view class="date">2024.05.24</view>
-              <view class="split">|</view>
-              <view class="viewCount">6次阅读</view>
+              <view class="date">{{ genCreateTime(item.gmtCreate) }}</view>
             </view>
           </view>
           <view class="hotRight">
@@ -80,6 +78,7 @@
 import { getPostList } from "@/api/post";
 import { NAV_LIST } from "./constant";
 import { isEmpty } from "lodash";
+import dayjs from "dayjs";
 
 export default {
   data() {
@@ -116,6 +115,9 @@ export default {
   },
   onLoad: function (option) {},
   methods: {
+    genCreateTime(timestamp) {
+      return dayjs(Number(timestamp)).format("YYYY-MM-DD");
+    },
     getPostInfo(item) {
       let res = { text: "", media: [] };
       if (item) {
