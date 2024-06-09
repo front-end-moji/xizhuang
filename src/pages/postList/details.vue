@@ -167,11 +167,21 @@ export default {
         postId: this.postInfo.id,
         topOptionId: this.selectedSetTop,
       }).then((res) => {
-        console.log(
-          "%c 🐙[ res ]-170",
-          "font-size:13px; background:#FFE599; color:#FFB570;",
-          res
-        );
+        const params = {
+          appId: res.data.appId,
+          timeStamp: res.data.timeStamp,
+          nonceStr: res.data.nonceStr,
+          signType: res.data.signType,
+          paySign: res.data.paySign,
+          package: res.data.packageBody,
+        };
+        uni.requestPayment(params).then((payRes) => {
+          if (payRes.errMsg === "requestPayment:ok") {
+            uni.showToast({
+              title: "支付成功",
+            });
+          }
+        });
       });
     },
     toggleSetTopVisible() {
