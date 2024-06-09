@@ -152,3 +152,11 @@ export const unsubscribePost = function (id) {
     method: "POST",
   });
 };
+
+// 查询 banner 列表
+export const fetchBannerList = function (id) {
+  return request({
+    url: "banner/list",
+    method: "GET",
+  });
+};

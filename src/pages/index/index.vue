@@ -24,7 +24,20 @@
   <view class="wrap">
     <view class="container">
       <view class="swiperContainer">
-        <img src="../../static/banner.png" class="bannerImg" alt="" />
+        <swiper
+          class="swiper"
+          circular
+          :indicator-dots="false"
+          :autoplay="autoplay"
+          :interval="interval"
+          :duration="duration"
+        >
+          <swiper-item v-for="item in bannerList" :key="item.url">
+            <view class="swiper-item">
+              <img :src="item.url" alt="" class="swiper-img" />
+            </view>
+          </swiper-item>
+        </swiper>
       </view>
 
       <view class="serviceListWrap">
@@ -75,7 +88,7 @@
 </template>
 
 <script>
-import { getPostList } from "@/api/post";
+import { getPostList, fetchBannerList } from "@/api/post";
 import { NAV_LIST } from "./constant";
 import { isEmpty } from "lodash";
 import dayjs from "dayjs";
@@ -89,6 +102,7 @@ export default {
       interval: 2000,
       duration: 500,
       postList: [],
+      bannerList: [],
     };
   },
   computed: {
@@ -110,6 +124,10 @@ export default {
             }
           })
           .catch((error) => {});
+
+        fetchBannerList().then(({ data }) => {
+          this.bannerList = data;
+        });
       }
     },
   },
@@ -210,11 +228,10 @@ export default {
 }
 
 .swiperContainer {
-  border-radius: 12px;
-  height: 128px;
+  border-radius: 8px;
+  height: 180px;
   margin-bottom: 12px;
-  border: 1px solid #ccc;
-  background: #92cc8a;
+  overflow: hidden;
 }
 
 .swiperContainer .bannerImg {
@@ -317,5 +334,22 @@ export default {
   height: 100%;
   width: 100%;
   object-fit: contain;
+}
+
+.swiper {
+  height: 100%;
+}
+
+.swiper-item {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.swiper-img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>

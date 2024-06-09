@@ -159,6 +159,9 @@ export default {
         visibility: this.viewRange === 'ALL' ? 1 : 0,
         ...params
       }
+      if (this.activeTab === 'TOTAL_TOPIC') {
+        delete paramsObj.topic
+      }
       getPostList(paramsObj)
         .then(({ data, code }) => {
           if (code === 0) {
@@ -171,11 +174,11 @@ export default {
     fetchPostTopicList() {
       getPostTopicList().then(({ code, data }) => {
         if (code === 0) {
-          this.topicList = data.list
+          const list = [{ name: '全部主题', id: 'TOTAL_TOPIC'}, ...data.list]
+          this.topicList = list
           if (!isEmpty(data.list)) {
-            const firstTopic = data.list[0].id;
-            this.activeTab = firstTopic;
-            this.fetchPostList({ topic: firstTopic })
+            this.activeTab = 'TOTAL_TOPIC';
+            this.fetchPostList()
             this.fetchRecommendTextList()
           }
         }
@@ -252,9 +255,6 @@ export default {
 .left.active {
   background: #5dc588;
   color: white;
-}
-
-.postContentWrap {
 }
 
 .scope {
