@@ -40,7 +40,7 @@ export default {
       });
       uni.navigateBack();
       uni.showToast({
-        title: "成功上传认证信息",
+        title: "成功上传认证信息, 请等待审核",
       });
     },
     selectPic() {

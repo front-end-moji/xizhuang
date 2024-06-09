@@ -34,51 +34,64 @@
     </view>
 
     <view class="content-wrap">
-      <post-item :isDetail="true" :topicList="topicList" :postInfo="postInfo" />
+      <post-item
+        :isDetail="true"
+        :topicList="topicList"
+        :postInfo="postInfo"
+        :updateList="() => getPostDetail(postInfo.id)"
+      />
     </view>
     <view class="comment-list">
-      <view class="comment-wrap" v-if="commentList.length > 0">
-        <view class="comment-title">全部评论</view>
+      <view class="comment">
+        <view class="comment-wrap" v-if="commentList.length > 0">
+          <view class="comment-title">全部评论</view>
 
-        <view class="comment-item" v-for="item in commentList" :key="item.id">
-          <avatar
-            :url="item.fromUser.avatar"
-            :styleObj="{ width: '24px', height: '24px' }"
-          ></avatar>
-          <view class="user-info">
-            <view class="header">
-              <text class="comment-user">{{ item.fromUser.username }}</text>
-              <text class="comment-date">{{
-                getDateDiff(item.gmtCreate)
-              }}</text>
+          <view
+            class="comment-item"
+            v-for="item in commentList"
+            :key="item.id"
+            @click="onReplyUser(item)"
+          >
+            <avatar
+              :url="item.fromUser.avatar"
+              :styleObj="{ width: '24px', height: '24px' }"
+            ></avatar>
+            <view class="user-info">
+              <view class="comment-header">
+                <text class="comment-user">{{ genUserNameText(item) }}</text>
+                <text class="comment-date">{{
+                  getDateDiff(item.gmtCreate)
+                }}</text>
+              </view>
+
+              <view class="content"> {{ item.content }} </view>
             </view>
-
-            <view class="content"> {{ item.content }} </view>
           </view>
         </view>
-      </view>
 
-      <view class="comment-empty-wrap" v-else>
-        <text>暂无评论~</text>
+        <view class="comment-empty-wrap" v-else>
+          <text class="empty-text">暂时没有人评论，快来抢沙发~</text>
+        </view>
       </view>
     </view>
     <view class="comment-btn-wrap">
       <uni-icons type="image" size="20" color="#f9d786"></uni-icons>
-      <textarea
+      <input
         class="commentTextarea"
-        placeholder="请输入您的想法"
-        rows="1"
+        :placeholder="placeholder"
         v-model="commentContent"
         maxlength="80"
-      ></textarea>
+        cursor-spacing="10"
+      />
       <view class="send-btn" @click="sendComment"> 发送 </view>
     </view>
+    <view class="comment-mask" @click="closeMask" v-if="replyUser" />
   </view>
 </template>
 
 <script>
 import { postItem } from "./postItem.vue";
-import { getPostDetailById } from "@/api/post";
+import { getPostDetailById, getPostTopicList } from "@/api/post";
 import { saveComment, getCommentList } from "@/api/comment";
 import { Avatar } from "../../components/avatar.vue";
 import { isEmpty } from "lodash";
@@ -95,6 +108,10 @@ export default {
       setTopVisible: false,
       setTopPaymentList: [],
       selectedSetTop: undefined,
+      topicList: [],
+      replyUser: null,
+      placeholder: "请输入您的想法",
+      autofocus: false,
     };
   },
   computed: {
@@ -117,11 +134,33 @@ export default {
   onLoad: function (option) {
     const id = JSON.parse(decodeURIComponent(option.id));
     this.postId = id;
+    this.fetchPostTopicList();
     this.getPostDetail(id);
     this.getPageList();
     this.fetchSetTopPaymentList();
   },
   methods: {
+    genUserNameText(item) {
+      if (!item.toUser) {
+        return item.fromUser.username;
+      }
+      return `${item.fromUser.username} 回复 ${item.toUser.username}`;
+    },
+    onReplyUser(item) {
+      this.autofocus = true;
+      this.replyUser = {
+        id: item.fromAuthorId,
+        username: item.fromUser.username,
+      };
+      this.placeholder = `@${this.replyUser.username}`;
+    },
+    fetchPostTopicList() {
+      getPostTopicList().then(({ code, data }) => {
+        if (code === 0) {
+          this.topicList = data.list;
+        }
+      });
+    },
     getPostDetail(id) {
       getPostDetailById({ id }).then(({ data, code }) => {
         if (code === 0) {
@@ -144,12 +183,15 @@ export default {
         postId: this.postId,
         content: this.commentContent,
       };
+      if (this.replyUser) {
+        params.toAuthorId = this.replyUser.id;
+      }
       saveComment(params).then(({ code, data }) => {
         uni.showToast({
           title: "发布成功",
         });
         this.getPageList();
-        this.commentContent = "";
+        this.closeMask();
       });
     },
     selectSetTop(id) {
@@ -192,6 +234,11 @@ export default {
     // 点赞
     likeComment() {},
     // 点赞
+    closeMask() {
+      this.replyUser = null;
+      this.placeholder = "请输入您的想法";
+      this.commentContent = "";
+    },
   },
 };
 </script>
@@ -219,38 +266,49 @@ export default {
   background: white;
   flex: 1;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+.comment {
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .comment-wrap {
-  padding: 12px;
-  max-height: calc(100% - 60px);
+  padding: 0 12px;
+  height: 100%;
   overflow-y: auto;
 }
 
 .comment-btn-wrap {
+  position: fix;
+  bottom: 0;
   background: white;
   height: 60px;
   width: 100vw;
   border-top: 1px solid #ccc;
-  position: absolute;
-  bottom: 0;
-  left: 0;
   padding: 0 6px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 100;
 }
 
 .commentTextarea {
-  border: 1px solid #ccc;
   border-radius: 8px;
-  width: 200px;
   height: 24px;
-  font-size: 12px;
-  line-height: 16px;
+  flex: 1;
+  border: 1px solid #ccc;
+  font-size: 14px;
   margin: 0 6px;
-  padding: 4px 6px 0 6px;
+  padding: 0 6px;
   box-sizing: border-box;
+}
+
+.commentTextarea::placeholder {
+  font-size: 14px;
 }
 
 .send-btn {
@@ -288,20 +346,17 @@ export default {
   margin: 0 12px;
 }
 
-.header {
+.comment-header {
   display: flex;
   align-content: center;
   color: #ccc;
+  font-size: 12px;
 }
 
 .comment-user {
   margin-right: 12px;
-  font-size: 16px;
 }
 
-.comment-date {
-  font-size: 14px;
-}
 .paymentWrap {
   display: flex;
   margin-top: 20rpx;
@@ -353,5 +408,26 @@ export default {
 
 .setTopContent {
   overflow: hidden;
+}
+
+.comment-empty-wrap {
+  text-align: center;
+  padding-top: 50px;
+}
+
+.empty-text {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.comment-mask {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  opacity: 0.5;
+  z-index: 99;
+  bottom: 0;
+  left: 0;
 }
 </style>

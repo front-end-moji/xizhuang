@@ -38,3 +38,22 @@ export function getDateDiff(timestamp) {
 
   return result;
 }
+
+export function getPostContentInfo(postContent) {
+  let res = {
+    text: "",
+    images: [],
+  };
+  if (postContent) {
+    try {
+      const { text, media } = JSON.parse(postContent);
+      res.images = media;
+      res.text = text;
+    } catch (e) {
+      res.images = [];
+      res.text = postContent;
+    }
+  }
+
+  return res;
+}

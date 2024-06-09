@@ -45,10 +45,10 @@
           :duration="duration"
           vertical
         >
-          <swiper-item v-for="item in textList" :key="item">
+          <swiper-item v-for="item in recommendList" :key="item">
             <view class="swiper-item">
-              <view class="swiper-text">
-                {{ item }}
+              <view class="swiper-text" @click="navToPostDetail(item.id)">
+                {{ this.getPostContentInfo(item.content).text }}
               </view>
               <text>></text>
             </view>
@@ -85,6 +85,7 @@
 import postItem from "./postItem.vue";
 import { getPostList, getPostTopicList } from "@/api/post";
 import { isEmpty } from 'lodash'
+import { getPostContentInfo } from "@/utils/index";
 
 export default {
   data() {
@@ -93,18 +94,11 @@ export default {
       activeTab: '',
       viewRange: 'ALL', // ALL or ONLY
       viewType: '最新', // LATEST or HOT
-      background: ['color1', 'color2', 'color3'],
       indicatorDots: true,
       autoplay: true,
       interval: 2000,
       duration: 500,
-      // FIXME: 需要更换
-      textList: [
-        '喜欢上别人的女朋友怎么办？',
-        '如果你对象变成一只蟑螂，你会怎么办',
-        '投稿',
-        '冒泡',
-      ],
+      recommendList: [],
       postList: [],
       topicList: []
     };
@@ -116,6 +110,7 @@ export default {
   computed: {
   },
   methods: {
+    getPostContentInfo,
     onTabClick(item) {
       if (this.activeTab === item.id) {
         return
@@ -139,7 +134,22 @@ export default {
       this.viewType = viewType
       this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0})
     },
-    fetchPostList(params) {
+    fetchRecommendTextList() {
+      const params = {
+        limit: 10,
+        page: 1,
+        isSearchLatestPost: 0
+      }
+      getPostList(params)
+        .then(({ data, code }) => {
+          if (code === 0) {
+            const { list } = data;
+            this.recommendList = list
+          }
+        })
+        .catch((error) => {})
+    },
+    fetchPostList(params, callback) {
       const { school } = this.$store.state.user
       let paramsObj = {
         isSearchLatestPost: this.viewType === '最新' ? 1 : 0,
@@ -149,9 +159,9 @@ export default {
         visibility: this.viewRange === 'ALL' ? 1 : 0,
         ...params
       }
-      // if (this.viewRange === 'ALL') {
-      //   delete paramsObj.visibility
-      // }
+      if (this.activeTab === 'TOTAL_TOPIC') {
+        delete paramsObj.topic
+      }
       getPostList(paramsObj)
         .then(({ data, code }) => {
           if (code === 0) {
@@ -164,15 +174,21 @@ export default {
     fetchPostTopicList() {
       getPostTopicList().then(({ code, data }) => {
         if (code === 0) {
-          this.topicList = data.list
+          const list = [{ name: '全部主题', id: 'TOTAL_TOPIC'}, ...data.list]
+          this.topicList = list
           if (!isEmpty(data.list)) {
-            const firstTopic = data.list[0].id;
-            this.activeTab = firstTopic;
-            this.fetchPostList({ topic: firstTopic })
+            this.activeTab = 'TOTAL_TOPIC';
+            this.fetchPostList()
+            this.fetchRecommendTextList()
           }
         }
       })
-    }
+    },
+    navToPostDetail(id) {
+      uni.navigateTo({
+        url: `/pages/postList/details?id=${id}`,
+      });
+    },
   },
 };
 </script>
@@ -239,9 +255,6 @@ export default {
 .left.active {
   background: #5dc588;
   color: white;
-}
-
-.postContentWrap {
 }
 
 .scope {

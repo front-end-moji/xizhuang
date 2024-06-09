@@ -55,42 +55,48 @@
 
       <view class="actions">
         <view class="action-left">
-          <text class="watching">8人围观</text>
+          <text
+            @click="subscribe(postInfo ? postInfo.isSubscribe : null)"
+            class="watching"
+            >{{ postInfo && postInfo.isSubscribe ? "取消订阅" : "订阅" }}</text
+          >
         </view>
         <view class="action-btns">
-          <uni-icons
+          <button
+            class="shareBtn"
+            v-if="
+              isDetail && postInfo && postInfo.authorId === $store.state.user.id
+            "
             @click="fetchDeletePost"
-            type="trash"
-            size="20"
-            color="#111111"
-            class="edit-icon"
-          ></uni-icons>
+          >
+            <uni-icons
+              type="trash"
+              size="20"
+              color="#111111"
+              class="edit-icon"
+            ></uni-icons>
+          </button>
 
           <button open-type="share" class="shareBtn" v-if="isDetail">
             <uni-icons type="redo" size="20" color="#111111"></uni-icons>
           </button>
 
-          <uni-icons
-            type="redo"
-            size="20"
-            color="#111111"
-            v-if="!isDetail"
-            @click="navToPostDetail"
-          ></uni-icons>
+          <button class="shareBtn" v-if="!isDetail" @click="navToPostDetail">
+            <uni-icons
+              type="chat"
+              size="20"
+              color="#111111"
+              class="edit-icon"
+            ></uni-icons>
+          </button>
 
-          <uni-icons
-            @click="navToPostDetail"
-            type="chat"
-            size="20"
-            color="#111111"
-            class="edit-icon"
-          ></uni-icons>
-          <uni-icons
-            type="heart"
-            size="20"
-            color="#111111"
-            @click="onLickClick"
-          ></uni-icons>
+          <button class="shareBtn" @click="onLickClick(postInfo.isLike)">
+            <uni-icons
+              :type="postInfo && postInfo.isLike ? 'heart-filled' : 'heart'"
+              size="20"
+              :color="postInfo && postInfo.isLike ? '#f6aeab' : '#111111'"
+            ></uni-icons>
+          </button>
         </view>
       </view>
     </view>
@@ -99,9 +105,15 @@
 
 <script>
 import { Avatar } from "../../components/avatar.vue";
-import { deletePost, likePost } from "@/api/post";
+import {
+  deletePost,
+  likePost,
+  unlikePost,
+  subscribePost,
+  unsubscribePost,
+} from "@/api/post";
 import { find } from "lodash";
-import { getDateDiff } from "@/utils/index";
+import { getDateDiff, getPostContentInfo } from "@/utils/index";
 
 export default {
   name: "PostItem",
@@ -129,7 +141,7 @@ export default {
       default: false,
       type: Boolean,
     },
-    deleteCb: {
+    updateList: {
       default: () => {},
       type: Function,
     },
@@ -157,17 +169,9 @@ export default {
       this.userInfo = data.user;
       this.schoolInfo = data.school;
       this.timeDiff = getDateDiff(data.gmtCreate);
-
-      if (data.content) {
-        try {
-          const { text, media } = JSON.parse(data.content);
-          this.images = media;
-          this.postContent = text;
-        } catch (e) {
-          this.images = [];
-          this.postContent = data.content;
-        }
-      }
+      const { text, images } = getPostContentInfo(data.content);
+      this.images = images;
+      this.postContent = text;
     },
     calcIsExpand() {
       const query = uni.createSelectorQuery().in(this);
@@ -185,11 +189,20 @@ export default {
         .exec();
     },
     fetchDeletePost() {
-      deletePost(this.postInfo.id).then(({ code, data }) => {
-        uni.showToast({
-          title: "删除成功",
-        });
-        this.updateList();
+      uni.showModal({
+        content: "是否确定删除该帖子",
+        success: ({ confirm }) => {
+          if (confirm) {
+            deletePost(this.postInfo.id).then(({ code, data }) => {
+              uni.showToast({
+                title: "删除成功",
+              });
+              uni.navigateTo({
+                url: "/pages/postList/index",
+              });
+            });
+          }
+        },
       });
     },
     onTabClick(item) {
@@ -209,13 +222,37 @@ export default {
         url: `/pages/postList/details?id=${this.postInfo.id}`,
       });
     },
-    onLickClick() {
-      likePost({ postId: this.postInfo.id }).then(({ code, data }) => {
-        uni.showToast({
-          title: "点赞成功",
+    onLickClick(isLike) {
+      if (!isLike) {
+        likePost({ postId: this.postInfo.id })
+          .then(({ code, data }) => {
+            this.updateList();
+          })
+          .catch((error) => {
+            console.log(
+              "%c [ error ]-230",
+              "font-size:13px; background:pink; color:#bf2c9f;",
+              error
+            );
+          });
+      } else {
+        // 取消点赞
+        unlikePost(this.postInfo.id).then(({ code, data }) => {
+          this.updateList();
         });
-        this.updateList();
-      });
+      }
+    },
+    subscribe(isSubscribe) {
+      if (!isSubscribe) {
+        subscribePost({ postId: this.postInfo.id }).then(({ code, data }) => {
+          this.updateList();
+        });
+      } else {
+        // 取消点赞
+        unsubscribePost(this.postInfo.id).then(({ code, data }) => {
+          this.updateList();
+        });
+      }
     },
   },
 };
@@ -257,6 +294,10 @@ export default {
   display: flex;
   align-items: center;
   margin-top: 2px;
+}
+
+.watching {
+  color: #5dc583;
 }
 
 .name {
@@ -379,6 +420,8 @@ export default {
   height: 40rpx;
   display: flex;
   align-items: center;
+  width: 24px;
+  justify-content: center;
 }
 
 .shareBtn::after {
