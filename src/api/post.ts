@@ -118,3 +118,12 @@ export function getPayParams({ postId, topOptionId }) {
     },
   });
 }
+
+// 评论点赞
+export const likePost = function (data) {
+  return request({
+    url: "postlikes/save",
+    method: "get",
+    data,
+  });
+};

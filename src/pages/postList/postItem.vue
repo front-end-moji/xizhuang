@@ -85,7 +85,12 @@
             color="#111111"
             class="edit-icon"
           ></uni-icons>
-          <uni-icons type="heart" size="20" color="#111111"></uni-icons>
+          <uni-icons
+            type="heart"
+            size="20"
+            color="#111111"
+            @click="onLickClick"
+          ></uni-icons>
         </view>
       </view>
     </view>
@@ -94,7 +99,7 @@
 
 <script>
 import { Avatar } from "../../components/avatar.vue";
-import { deletePost } from "@/api/post";
+import { deletePost, likePost } from "@/api/post";
 import { find } from "lodash";
 import { getDateDiff } from "@/utils/index";
 
@@ -184,7 +189,7 @@ export default {
         uni.showToast({
           title: "删除成功",
         });
-        this.deleteCb();
+        this.updateList();
       });
     },
     onTabClick(item) {
@@ -202,6 +207,14 @@ export default {
     navToPostDetail() {
       uni.navigateTo({
         url: `/pages/postList/details?id=${this.postInfo.id}`,
+      });
+    },
+    onLickClick() {
+      likePost({ postId: this.postInfo.id }).then(({ code, data }) => {
+        uni.showToast({
+          title: "点赞成功",
+        });
+        this.updateList();
       });
     },
   },
