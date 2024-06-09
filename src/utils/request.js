@@ -63,6 +63,12 @@ export default class Request {
         },
         success: (res) => {
           // 判断 请求api 格式是否正确
+          if (res.data.code !== 0) {
+            uni.showToast({
+              title: res.data.msg,
+              icon: "none",
+            });
+          }
           if (res.statusCode && res.statusCode != 200) {
             uni.showToast({
               title: "api错误" + res.errMsg,
