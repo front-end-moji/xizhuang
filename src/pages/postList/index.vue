@@ -62,7 +62,7 @@
             <post-item
               :postInfo="item"
               :key="item.id"
-              :deleteCb="fetchPostList"
+              :updateList="fetchPostList"
               :topicList="topicList"
               :isDetail="false"
             ></post-item>
