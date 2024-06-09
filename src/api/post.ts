@@ -119,11 +119,36 @@ export function getPayParams({ postId, topOptionId }) {
   });
 }
 
-// 评论点赞
+// 点赞帖子
 export const likePost = function (data) {
   return request({
     url: "postlikes/save",
-    method: "get",
+    method: "POST",
     data,
+  });
+};
+
+// 取消点赞帖子
+export const unlikePost = function (id) {
+  return request({
+    url: `postlikes/delete/${id}`,
+    method: "POST",
+  });
+};
+
+// 订阅帖子
+export const subscribePost = function (data) {
+  return request({
+    url: "postsubscribe/save",
+    method: "POST",
+    data,
+  });
+};
+
+// 取消订阅帖子
+export const unsubscribePost = function (id) {
+  return request({
+    url: `postsubscribe/delete/${id}`,
+    method: "POST",
   });
 };

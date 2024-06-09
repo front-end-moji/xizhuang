@@ -110,13 +110,7 @@ export default {
               this.postList = data.list.slice(2);
             }
           })
-          .catch((error) => {
-            console.log(
-              "%c [ error ]-114",
-              "font-size:13px; background:pink; color:#bf2c9f;",
-              error
-            );
-          });
+          .catch((error) => {});
       }
     },
   },

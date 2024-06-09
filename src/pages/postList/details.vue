@@ -40,14 +40,19 @@
       <view class="comment-wrap" v-if="commentList.length > 0">
         <view class="comment-title">全部评论</view>
 
-        <view class="comment-item" v-for="item in commentList" :key="item.id">
+        <view
+          class="comment-item"
+          v-for="item in commentList"
+          :key="item.id"
+          @click="onReplyUser(item)"
+        >
           <avatar
             :url="item.fromUser.avatar"
             :styleObj="{ width: '24px', height: '24px' }"
           ></avatar>
           <view class="user-info">
-            <view class="header">
-              <text class="comment-user">{{ item.fromUser.username }}</text>
+            <view class="comment-header">
+              <text class="comment-user">{{ genUserNameText(item) }}</text>
               <text class="comment-date">{{
                 getDateDiff(item.gmtCreate)
               }}</text>
@@ -59,17 +64,19 @@
       </view>
 
       <view class="comment-empty-wrap" v-else>
-        <text>暂无评论~</text>
+        <text class="empty-text">暂时没有人评论，快来抢沙发~</text>
       </view>
     </view>
+    <view class="comment-mask" @click="closeMask" v-if="replyUser" />
     <view class="comment-btn-wrap">
       <uni-icons type="image" size="20" color="#f9d786"></uni-icons>
       <textarea
         class="commentTextarea"
-        placeholder="请输入您的想法"
+        :placeholder="placeholder"
         rows="1"
         v-model="commentContent"
         maxlength="80"
+        :autofocus="autofocus"
       ></textarea>
       <view class="send-btn" @click="sendComment"> 发送 </view>
     </view>
@@ -78,7 +85,7 @@
 
 <script>
 import { postItem } from "./postItem.vue";
-import { getPostDetailById } from "@/api/post";
+import { getPostDetailById, getPostTopicList } from "@/api/post";
 import { saveComment, getCommentList } from "@/api/comment";
 import { Avatar } from "../../components/avatar.vue";
 import { isEmpty } from "lodash";
@@ -95,6 +102,10 @@ export default {
       setTopVisible: false,
       setTopPaymentList: [],
       selectedSetTop: undefined,
+      topicList: [],
+      replyUser: null,
+      placeholder: "请输入您的想法",
+      autofocus: false,
     };
   },
   computed: {
@@ -117,11 +128,33 @@ export default {
   onLoad: function (option) {
     const id = JSON.parse(decodeURIComponent(option.id));
     this.postId = id;
+    this.fetchPostTopicList();
     this.getPostDetail(id);
     this.getPageList();
     this.fetchSetTopPaymentList();
   },
   methods: {
+    genUserNameText(item) {
+      if (!item.toUser) {
+        return item.fromUser.username;
+      }
+      return `${item.fromUser.username} 回复 ${item.toUser.username}`;
+    },
+    onReplyUser(item) {
+      this.autofocus = true;
+      this.replyUser = {
+        id: item.fromAuthorId,
+        username: item.fromUser.username,
+      };
+      this.placeholder = `@${this.replyUser.username}`;
+    },
+    fetchPostTopicList() {
+      getPostTopicList().then(({ code, data }) => {
+        if (code === 0) {
+          this.topicList = data.list;
+        }
+      });
+    },
     getPostDetail(id) {
       getPostDetailById({ id }).then(({ data, code }) => {
         if (code === 0) {
@@ -144,16 +177,17 @@ export default {
         postId: this.postId,
         content: this.commentContent,
       };
+      if (this.replyUser) {
+        params.toAuthorId = this.replyUser.id;
+      }
       saveComment(params).then(({ code, data }) => {
         uni.showToast({
           title: "发布成功",
         });
         this.getPageList();
-        this.commentContent = "";
+        this.closeMask();
       });
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
     selectSetTop(id) {
       this.selectedSetTop = id;
     },
@@ -191,14 +225,11 @@ export default {
         this.setTopPaymentList = res.data;
       });
     },
-=======
-    // 点赞
-    likeComment() {},
->>>>>>> 4a6a16f (feat: 处理评论)
-=======
-    // 点赞
-    likeComment() {},
->>>>>>> 4a6a16f (feat: 处理评论)
+    closeMask() {
+      this.replyUser = null;
+      this.placeholder = "请输入您的想法";
+      this.commentContent = "";
+    },
   },
 };
 </script>
@@ -246,6 +277,7 @@ export default {
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  z-index: 100;
 }
 
 .commentTextarea {
@@ -295,20 +327,17 @@ export default {
   margin: 0 12px;
 }
 
-.header {
+.comment-header {
   display: flex;
   align-content: center;
   color: #ccc;
+  font-size: 12px;
 }
 
 .comment-user {
   margin-right: 12px;
-  font-size: 16px;
 }
 
-.comment-date {
-  font-size: 14px;
-}
 .paymentWrap {
   display: flex;
   margin-top: 20rpx;
@@ -360,5 +389,26 @@ export default {
 
 .setTopContent {
   overflow: hidden;
+}
+
+.comment-empty-wrap {
+  text-align: center;
+  padding-top: 50px;
+}
+
+.empty-text {
+  font-size: 12px;
+  color: #ccc;
+}
+
+.comment-mask {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  opacity: 0.5;
+  z-index: 99;
+  top: 0;
+  left: 0;
 }
 </style>

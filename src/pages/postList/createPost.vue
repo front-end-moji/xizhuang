@@ -72,9 +72,7 @@
 import { uniForms } from "@dcloudio/uni-ui/lib/uni-forms/uni-forms.vue";
 import { POST_RANGE_LIST } from "./constant";
 import { publishPostReq } from "../../api/post";
-import {
-  getPostTopicList,
-} from "@/api/post";
+import { getPostTopicList } from "@/api/post";
 
 export default {
   data() {
@@ -125,13 +123,6 @@ export default {
         }, 800);
       });
     },
-    selectPic() {
-      uni.chooseImage({
-        count: 3,
-        sourceType: ["album"],
-        success(res) {},
-      });
-    },
     fetchPostTopicList() {
       getPostTopicList().then(({ code, data }) => {
         if (code === 0) {
@@ -179,7 +170,6 @@ export default {
   padding: 0 12px;
   font-size: 14px;
 }
-
 
 .textarea {
   margin: 12px 0;
@@ -269,6 +259,4 @@ export default {
 .position-text .sym {
   margin-left: 4px;
 }
-
-
 </style>
