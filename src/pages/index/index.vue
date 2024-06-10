@@ -110,31 +110,30 @@ export default {
       return this.$store.state.token;
     },
   },
-  watch: {
-    token(newVal) {
-      if (newVal) {
-        getPostList({
-          isSearchLatestPost: 0,
-          limit: 10,
-          page: 1,
-        })
-          .then(({ data, code }) => {
-            if ((code === 0) & !isEmpty(data.list)) {
-              this.postList = data.list;
-            }
-          })
-          .catch((error) => {});
-
-        fetchBannerList().then(({ code, data }) => {
-          if (code === 0) {
-            this.bannerList = data;
-          }
-        });
-      }
-    },
+  watch: {},
+  onLoad: function (option) {
+    this.pageInit();
   },
-  onLoad: function (option) {},
   methods: {
+    pageInit() {
+      getPostList({
+        isSearchLatestPost: 0,
+        limit: 10,
+        page: 1,
+      })
+        .then(({ data, code }) => {
+          if ((code === 0) & !isEmpty(data.list)) {
+            this.postList = data.list;
+          }
+        })
+        .catch((error) => {});
+
+      fetchBannerList().then(({ code, data }) => {
+        if (code === 0) {
+          this.bannerList = data;
+        }
+      });
+    },
     genCreateTime(timestamp) {
       return dayjs(Number(timestamp)).format("YYYY-MM-DD");
     },
