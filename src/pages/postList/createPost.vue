@@ -6,6 +6,7 @@
         placeholder="请输入您的想法"
         rows="8"
         v-model="postContent"
+        maxlength="1024"
       ></textarea>
     </view>
 
