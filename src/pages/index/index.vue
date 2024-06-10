@@ -114,7 +114,7 @@ export default {
     token(newVal) {
       if (newVal) {
         getPostList({
-          isSearchLatestPost: 1,
+          isSearchLatestPost: 0,
           limit: 10,
           page: 1,
         })
