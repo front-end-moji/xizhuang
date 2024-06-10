@@ -62,11 +62,15 @@ export default class Request {
           token,
         },
         success: (res) => {
+          if (!hideLoading) {
+            uni.hideLoading();
+          }
           // 判断 请求api 格式是否正确
           if (res.data.code !== 0) {
             uni.showToast({
               title: res.data.msg,
               icon: "none",
+              duration: 2000,
             });
           }
           if (res.statusCode && res.statusCode != 200) {
@@ -81,6 +85,9 @@ export default class Request {
         },
         //请求失败
         fail: (e) => {
+          if (!hideLoading) {
+            uni.hideLoading();
+          }
           uni.showToast({
             title: "Something error!",
             icon: "none",
@@ -90,9 +97,6 @@ export default class Request {
         //请求完成
         complete() {
           //隐藏加载
-          if (!hideLoading) {
-            uni.hideLoading();
-          }
           resolve();
           return;
         },
