@@ -72,6 +72,7 @@ export default class Request {
               icon: "none",
               duration: 2000,
             });
+            return;
           }
           if (res.statusCode && res.statusCode != 200) {
             uni.showToast({
