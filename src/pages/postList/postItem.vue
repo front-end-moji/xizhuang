@@ -194,12 +194,14 @@ export default {
         success: ({ confirm }) => {
           if (confirm) {
             deletePost(this.postInfo.id).then(({ code, data }) => {
-              uni.showToast({
-                title: "删除成功",
-              });
-              uni.navigateTo({
-                url: "/pages/postList/index",
-              });
+              if (code === 0) {
+                uni.showToast({
+                  title: "删除成功",
+                });
+                uni.navigateTo({
+                  url: "/pages/postList/index",
+                });
+              }
             });
           }
         },
@@ -226,31 +228,33 @@ export default {
       if (!isLike) {
         likePost({ postId: this.postInfo.id })
           .then(({ code, data }) => {
-            this.updateList();
+            if (code === 0) {
+              this.updateList();
+            }
           })
-          .catch((error) => {
-            console.log(
-              "%c [ error ]-230",
-              "font-size:13px; background:pink; color:#bf2c9f;",
-              error
-            );
-          });
+          .catch((error) => {});
       } else {
         // 取消点赞
         unlikePost(this.postInfo.id).then(({ code, data }) => {
-          this.updateList();
+          if (code === 0) {
+            this.updateList();
+          }
         });
       }
     },
     subscribe(isSubscribe) {
       if (!isSubscribe) {
         subscribePost({ postId: this.postInfo.id }).then(({ code, data }) => {
-          this.updateList();
+          if (code === 0) {
+            this.updateList();
+          }
         });
       } else {
         // 取消点赞
         unsubscribePost(this.postInfo.id).then(({ code, data }) => {
-          this.updateList();
+          if (code === 0) {
+            this.updateList();
+          }
         });
       }
     },

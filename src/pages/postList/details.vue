@@ -172,8 +172,10 @@ export default {
     getPageList() {
       getCommentList({ postId: this.postId, limit: 10, page: 1 }).then(
         ({ code, data }) => {
-          if (data && !isEmpty(data.list)) {
-            this.commentList = data.list;
+          if (code === 0) {
+            if (data && !isEmpty(data.list)) {
+              this.commentList = data.list;
+            }
           }
         }
       );
@@ -187,11 +189,13 @@ export default {
         params.toAuthorId = this.replyUser.id;
       }
       saveComment(params).then(({ code, data }) => {
-        uni.showToast({
-          title: "发布成功",
-        });
-        this.getPageList();
-        this.closeMask();
+        if (code === 0) {
+          uni.showToast({
+            title: "发布成功",
+          });
+          this.getPageList();
+          this.closeMask();
+        }
       });
     },
     selectSetTop(id) {

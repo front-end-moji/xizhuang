@@ -68,6 +68,7 @@ export default class Request {
               title: res.data.msg,
               icon: "none",
             });
+            return;
           }
           if (res.statusCode && res.statusCode != 200) {
             uni.showToast({

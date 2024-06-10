@@ -113,15 +113,17 @@ export default {
         visibility: this.rangeIndex + "",
         isAnonymous: this.isAnonymous, // FIXME: 处理是否匿名
       };
-      publishPostReq(data).then((data) => {
-        uni.showToast({
-          title: "发布成功",
-        });
-        setTimeout(() => {
-          uni.navigateTo({
-            url: "/pages/postList/index",
+      publishPostReq(data).then(({ code }) => {
+        if (code === 0) {
+          uni.showToast({
+            title: "发布成功",
           });
-        }, 800);
+          setTimeout(() => {
+            uni.navigateTo({
+              url: "/pages/postList/index",
+            });
+          }, 800);
+        }
       });
     },
     fetchPostTopicList() {
