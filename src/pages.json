@@ -71,6 +71,12 @@
       "style": {
         "navigationBarTitleText": "学生认证"
       }
+    },
+    {
+      "path": "pages/myPost/index",
+      "style": {
+        "navigationBarTitleText": "我的帖子"
+      }
     }
   ],
   "globalStyle": {

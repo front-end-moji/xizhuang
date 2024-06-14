@@ -50,6 +50,13 @@
           <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
         </view>
       </view>
+      <view class="listItem" @click="go2MyPost">
+        <view>
+          <uni-icons type="compose" size="18" color="#444444"></uni-icons>
+          我的帖子
+        </view>
+        <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
+      </view>
       <view class="listItem">
         <view>
           <uni-icons type="cart" size="18" color="#444444"></uni-icons>
@@ -141,6 +148,17 @@ export default {
         });
       }
     },
+    go2MyPost() {
+      if (!this.$store.state.user) {
+        uni.showToast({
+          title: "请先登录",
+        });
+      } else {
+        uni.navigateTo({
+          url: "/pages/myPost/index",
+        });
+      }
+    }
   },
 };
 </script>

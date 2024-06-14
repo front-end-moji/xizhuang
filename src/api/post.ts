@@ -160,3 +160,14 @@ export const fetchBannerList = function (id) {
     method: "GET",
   });
 };
+
+export const queryMyPostList = function () {
+  return request({
+    url: "user/profile/myPosts",
+    method: "GET",
+    data: {
+      limit: 10000,
+      page: 1,
+    }
+  });
+};

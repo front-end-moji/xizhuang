@@ -1,7 +1,11 @@
 <template>
   <view class="postItem">
     <view class="postHeader">
-      <avatar :url="userInfo.avatar || ''"></avatar>
+      <view>
+        <avatar :url="userInfo.avatar || ''"></avatar>
+        <img v-if="isTop" src="/static/top.png" class="top" />
+      </view>
+
       <view class="info">
         <text class="name">{{ userInfo.username }}</text>
         <view class="detailInfo">
@@ -18,7 +22,7 @@
         </view>
       </view>
 
-      <view class="postTopic">{{ topicText }}</view>
+      <view v-if="topicText" class="postTopic">{{ topicText }}</view>
     </view>
 
     <view class="post-content" :class="{ isDetail: isDetail }">
@@ -149,6 +153,9 @@ export default {
   computed: {
     topicText() {
       return find(this.topicList, { id: this.postInfo?.topic })?.name || "";
+    },
+    isTop() {
+      return this.postInfo && this.postInfo.isTop;
     },
   },
   components: { Avatar },
@@ -430,6 +437,13 @@ export default {
 
 .shareBtn::after {
   border: none;
+}
+
+.top {
+  width: 80rpx;
+  height: 80rpx;
+  position: absolute;
+  top: 60rpx;
 }
 
 .action-btns {
