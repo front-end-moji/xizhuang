@@ -46,12 +46,7 @@
         <view class="comment-wrap" v-if="commentList.length > 0">
           <view class="comment-title">全部评论</view>
 
-          <view
-            class="comment-item"
-            v-for="item in commentList"
-            :key="item.id"
-            @click="onReplyComment(item)"
-          >
+          <view class="comment-item" v-for="item in commentList" :key="item.id">
             <avatar
               :url="item.fromUser.avatar"
               :styleObj="{ width: '24px', height: '24px' }"
@@ -70,19 +65,23 @@
                     color="#111111"
                     v-if="item.fromAuthorId === $store.state.user.id"
                     class="edit-icon"
-                    @click.prevent="deleteComment(item.id)"
+                    @click.prevent="() => deleteComment(item.id)"
                   ></uni-icons>
 
                   <uni-icons
                     size="20"
-                    type="heart"
                     class="edit-icon"
-                    color="#111111"
+                    :type="item.isLike ? 'heart-filled' : 'heart'"
+                    :color="item.isLike ? '#f6aeab' : '#111111'"
+                    @click.prevent="() => likeComment(item.id, item.isLike)"
                   ></uni-icons>
+                  ({{ item.likeNum || "0" }})
                 </view>
               </view>
 
-              <view class="content"> {{ item.content }} </view>
+              <view class="content" @click="() => onReplyComment(item)">
+                {{ item.content }}
+              </view>
 
               <view
                 class="hasSecond"
@@ -99,7 +98,6 @@
                   class="itemWrap"
                   v-for="secondItem in secondCommentMap[`${item.id}`].list"
                   :key="secondItem.id"
-                  @click.prevent="onReplyUser(secondItem, item.id)"
                 >
                   <view class="comment-header">
                     <text class="comment-user">{{
@@ -108,6 +106,7 @@
                     <text class="comment-date">{{
                       getDateDiff(secondItem.gmtCreate)
                     }}</text>
+
                     <view class="icons-wrap">
                       <uni-icons
                         type="trash"
@@ -115,18 +114,33 @@
                         color="#111111"
                         v-if="secondItem.fromAuthorId === $store.state.user.id"
                         class="edit-icon"
+                        @click.prevent="() => deleteComment(secondItem.id)"
                       ></uni-icons>
 
                       <uni-icons
                         size="20"
-                        type="heart"
                         class="edit-icon"
-                        color="#111111"
+                        :type="secondItem.isLike ? 'heart-filled' : 'heart'"
+                        :color="secondItem.isLike ? '#f6aeab' : '#111111'"
+                        @click.prevent="
+                          () =>
+                            likeComment(
+                              secondItem.id,
+                              secondItem.isLike,
+                              item.id
+                            )
+                        "
                       ></uni-icons>
+                      ({{ secondItem.likeNum || "0" }})
                     </view>
                   </view>
 
-                  <view class="content"> {{ secondItem.content }} </view>
+                  <view
+                    class="content"
+                    @click.prevent="onReplyUser(secondItem, item.id)"
+                  >
+                    {{ secondItem.content }}
+                  </view>
                 </view>
               </view>
             </view>
@@ -155,7 +169,12 @@
 
 <script>
 import { postItem } from "./postItem.vue";
-import { getPostDetailById, getPostTopicList } from "@/api/post";
+import {
+  getPostDetailById,
+  getPostTopicList,
+  likePost,
+  unlikePost,
+} from "@/api/post";
 import { saveComment, getCommentList, deleteCommentById } from "@/api/comment";
 import { Avatar } from "../../components/avatar.vue";
 import { isEmpty } from "lodash";
@@ -209,10 +228,113 @@ export default {
       return this.secondCommentMap[id] && this.secondCommentMap[id].list;
     },
     deleteComment(id, isFirst) {
-      deleteCommentById(id).then(({ code, data }) => {
-        this.getPageList();
-        this.secondCommentMap = {};
+      uni.showModal({
+        content: "是否确定删除该帖子",
+        success: ({ confirm }) => {
+          if (confirm) {
+            deleteCommentById(id).then(({ code, data }) => {
+              this.getPageList();
+              this.secondCommentMap = {};
+              this.closeMask();
+            });
+          }
+        },
       });
+    },
+
+    changeCommentList(id, isLike) {
+      const newList = this.commentList.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            isLike,
+            likeNum: isLike
+              ? item.likeNum
+                ? Number(item.likeNum) + 1
+                : 1
+              : Number(item.likeNum) - 1,
+          };
+        }
+        return item;
+      });
+
+      this.commentList = newList;
+    },
+
+    changeSecondCommonList(id, parentId, isLike) {
+      console.log(
+        "%c [  ]-262",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        1111
+      );
+      const data = { ...this.secondCommentMap[parentId] };
+      console.log(
+        "%c [ data ]-267",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        data
+      );
+      data.list = data.list.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            isLike,
+            likeNum: isLike
+              ? item.likeNum
+                ? Number(item.likeNum) + 1
+                : 1
+              : Number(item.likeNum) - 1,
+          };
+        }
+        return item;
+      });
+
+      console.log(
+        "%c [ data ]-280",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        data
+      );
+
+      this.secondCommentMap = {
+        ...this.secondCommentMap,
+        [parentId]: data,
+      };
+    },
+
+    likeComment(id, likeState, parentId = "") {
+      // 当前是已点赞
+      if (likeState) {
+        unlikePost(id).then(({ code }) => {
+          if (code === 0) {
+            if (!parentId) {
+              this.changeCommentList(id, false);
+            } else {
+            }
+          }
+        });
+      } else {
+        likePost({ postId: this.postId, postRepliesId: id, type: 1 })
+          .then(({ code }) => {
+            if (code === 0) {
+              if (!parentId) {
+                this.changeCommentList(id, true);
+              } else {
+                console.log(
+                  "%c [  ]-313",
+                  "font-size:13px; background:pink; color:#bf2c9f;",
+                  2222
+                );
+                this.changeSecondCommonList(id, parentId, true);
+              }
+            }
+          })
+          .catch((error) => {
+            console.log(
+              "%c [ error ]-322",
+              "font-size:13px; background:pink; color:#bf2c9f;",
+              error
+            );
+          });
+      }
     },
     checkIsExpand(id) {
       return this.secondCommentMap[id] && this.secondCommentMap[id].expand;
@@ -297,7 +419,7 @@ export default {
         repliesId: 0,
       }).then(({ code, data }) => {
         if (code === 0) {
-          if (data && !isEmpty(data.list)) {
+          if (data && data.list) {
             this.commentList = data.list;
           }
         }
@@ -362,9 +484,6 @@ export default {
         this.setTopPaymentList = res.data;
       });
     },
-    // 点赞
-    likeComment() {},
-    // 点赞
     closeMask() {
       this.replyUser = null;
       this.placeholder = "请输入您的想法";
@@ -575,11 +694,12 @@ export default {
 
 .icons-wrap {
   position: absolute;
-  right: 0;
+  right: 8px;
   top: -3px;
   background: white;
   display: flex;
   width: 40px;
+  align-items: center;
 }
 
 .edit-icon {

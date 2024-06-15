@@ -108,7 +108,7 @@
               :color="postInfo && postInfo.isLike ? '#f6aeab' : '#111111'"
             ></uni-icons>
           </button>
-          <view class="count" v-if="!isDetail">({{  likeNum }})</view>
+          <view class="count" v-if="!isDetail">({{ likeNum }})</view>
         </view>
       </view>
     </view>
@@ -271,7 +271,7 @@ export default {
     },
     onLickClick(isLike) {
       if (!isLike) {
-        likePost({ postId: this.postInfo.id })
+        likePost({ postId: this.postInfo.id, type: 0 })
           .then(({ code, data }) => {
             if (code === 0) {
               this.updateList();
