@@ -66,6 +66,10 @@
           >
         </view>
         <view class="action-btns">
+          <button class="shareBtn">
+            <uni-icons type="eye" size="20" color="#111111"></uni-icons>
+          </button>
+          <view class="count">({{ pageViewNum }})</view>
           <button
             class="shareBtn"
             v-if="
@@ -93,6 +97,7 @@
               class="edit-icon"
             ></uni-icons>
           </button>
+          <view class="count" v-if="!isDetail">({{ repliesNum }})</view>
 
           <button class="shareBtn" @click="onLickClick(postInfo.isLike)">
             <uni-icons
@@ -101,6 +106,7 @@
               :color="postInfo && postInfo.isLike ? '#f6aeab' : '#111111'"
             ></uni-icons>
           </button>
+          <view class="count" v-if="!isDetail">({{  likeNum }})</view>
         </view>
       </view>
     </view>
@@ -156,6 +162,30 @@ export default {
     },
     isTop() {
       return this.postInfo && this.postInfo.isTop;
+    },
+    repliesNum() {
+      if (this.postInfo) {
+        if (this.postInfo.repliesNum) {
+          return this.postInfo.repliesNum;
+        }
+      }
+      return 0;
+    },
+    pageViewNum() {
+      if (this.postInfo) {
+        if (this.postInfo.pageViewNum) {
+          return this.postInfo.pageViewNum;
+        }
+      }
+      return 0;
+    },
+    likeNum() {
+      if (this.postInfo) {
+        if (this.postInfo.likeNum) {
+          return this.postInfo.likeNum;
+        }
+      }
+      return 0;
     },
   },
   components: { Avatar },
@@ -433,6 +463,7 @@ export default {
   align-items: center;
   width: 24px;
   justify-content: center;
+  margin: 0;
 }
 
 .shareBtn::after {
@@ -448,5 +479,12 @@ export default {
 
 .action-btns {
   display: flex;
+  width: 300rpx;
+  justify-content: flex-end;
+}
+
+.count {
+  display: flex;
+  align-items: center;
 }
 </style>
