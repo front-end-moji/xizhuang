@@ -119,7 +119,7 @@ export default {
             title: "发布成功",
           });
           setTimeout(() => {
-            uni.navigateTo({
+            uni.redirectTo({
               url: "/pages/postList/index",
             });
           }, 800);

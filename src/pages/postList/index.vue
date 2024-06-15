@@ -119,7 +119,7 @@ export default {
       this.fetchPostList({ topic: item.id })
     },
     navToCreatePost: () => {
-      uni.navigateTo({
+      uni.redirectTo({
         url: "/pages/postList/createPost",
       });
     },
