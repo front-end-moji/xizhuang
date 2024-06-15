@@ -47,7 +47,9 @@
           v-for="(item, index) in images.slice(0, 3)"
           :key="item"
         >
+          <video v-if="isVideo(item)" class="img" :src="item"></video>
           <img
+            v-else
             class="img"
             :src="item"
             mode="widthFit"
@@ -202,6 +204,12 @@ export default {
     this.calcIsExpand();
   },
   methods: {
+    isVideo(src) {
+      const list = src.split(".");
+      const fileType = list[list.length - 1];
+      const res = ["mp4", "avi"].includes(fileType);
+      return res;
+    },
     initInfo(data) {
       this.userInfo = data.user;
       this.schoolInfo = data.school;

@@ -65,6 +65,8 @@
               </view>
 
               <view class="content"> {{ item.content }} </view>
+
+              <view class="hasSecond" v-if="item.hasSecond">展开</view>
             </view>
           </view>
         </view>
@@ -109,7 +111,7 @@ export default {
       setTopPaymentList: [],
       selectedSetTop: undefined,
       topicList: [],
-      replyUser: null,
+      replyCommentId: null,
       placeholder: "请输入您的想法",
       autofocus: false,
     };
@@ -170,24 +172,28 @@ export default {
     },
     getDateDiff,
     getPageList() {
-      getCommentList({ postId: this.postId, limit: 10, page: 1 }).then(
-        ({ code, data }) => {
-          if (code === 0) {
-            if (data && !isEmpty(data.list)) {
-              this.commentList = data.list;
-            }
+      getCommentList({
+        postId: this.postId,
+        limit: 10,
+        page: 1,
+        repliesId: 0,
+      }).then(({ code, data }) => {
+        if (code === 0) {
+          if (data && !isEmpty(data.list)) {
+            this.commentList = data.list;
           }
         }
-      );
+      });
     },
     sendComment() {
       const params = {
         postId: this.postId,
         content: this.commentContent,
+        repliesId: this.replyUser ? this.replyUser.id : 0,
       };
-      if (this.replyUser) {
-        params.toAuthorId = this.replyUser.id;
-      }
+      // if (this.replyUser) {
+      // params.toAuthorId = this.replyUser.id;
+      // }
       saveComment(params).then(({ code, data }) => {
         if (code === 0) {
           uni.showToast({

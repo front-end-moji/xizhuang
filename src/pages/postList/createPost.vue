@@ -12,13 +12,30 @@
 
     <view class="example-body">
       <uni-file-picker
+        v-if="videoList.length <= 0"
         v-model="imgList"
         :auto-upload="false"
-        @select.prevent="uploadSelect"
-        file-extname="png,jpg"
+        @select.prevent="uploadImgSelect"
+        file-mediatype="image"
         ref="uploadFileRef"
-        limit="5"
+        limit="9"
       ></uni-file-picker>
+    </view>
+
+    <view class="example-body">
+      <uni-file-picker
+        v-if="imgList.length <= 0 && !uploading"
+        v-model="videoList"
+        :auto-upload="false"
+        @select.prevent="uploadVideoSelect"
+        file-mediatype="video"
+        ref="uploadFileRef"
+        limit="1"
+        @progress="progress"
+      ></uni-file-picker>
+      <view class="imgItem" v-if="videoSrc">
+        <video class="img" :src="videoSrc"></video>
+      </view>
     </view>
 
     <view class="xxxx" @click="selectPic"></view>
@@ -85,11 +102,22 @@ export default {
       rangeList: POST_RANGE_LIST,
       topicList: [],
       postImgSrc: [],
+      imgList: [],
+      videoList: [],
+      videoSrc: "",
+      uploading: false,
     };
   },
   computed: {
     topicRangeList() {
       return this.topicList.map((item) => item.name);
+    },
+  },
+  watch: {
+    videoList(val) {
+      if (val.length === 0) {
+        this.videoSrc = "";
+      }
     },
   },
   components: { uniForms },
@@ -98,6 +126,12 @@ export default {
   },
   mounted() {},
   methods: {
+    isVideo(src) {
+      const list = src.split(".");
+      const fileType = list[list.length - 1];
+      const res = ["mp4", "avi"].includes(fileType);
+      return res;
+    },
     changeIsAnonymous(e) {
       this.isAnonymous = e.detail.value;
     },
@@ -143,7 +177,17 @@ export default {
     bindRangePickerChange: function (e) {
       this.rangeIndex = e.detail.value;
     },
-    uploadSelect(res) {
+    uploadImgSelect(res) {
+      this.imgList.push(res);
+      this.uploadImg(res.tempFilePaths);
+    },
+    uploadVideoSelect(res) {
+      this.uploading = true;
+      uni.showLoading({
+        title: "视频上传中",
+        mask: true,
+      });
+      this.videoList.push(res);
       this.uploadImg(res.tempFilePaths);
     },
     uploadImg(tempFilePaths) {
@@ -155,8 +199,14 @@ export default {
           token: this.$store.state.token,
         },
         success: (res) => {
+          this.uploading = false;
+          uni.hideLoading();
           const src = JSON.parse(res.data).data;
           this.postImgSrc.push(src);
+          const isVideo = this.isVideo(src);
+          if (isVideo) {
+            this.videoSrc = src;
+          }
         },
       });
     },
@@ -261,5 +311,23 @@ export default {
 }
 .position-text .sym {
   margin-left: 4px;
+}
+
+.example-body {
+  margin-top: 8px;
+}
+
+.imgItem {
+  flex-shrink: 0;
+  border-radius: 4px;
+  width: 30%;
+  height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+.imgItem .img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>
