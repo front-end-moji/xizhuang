@@ -50,7 +50,7 @@
             class="comment-item"
             v-for="item in commentList"
             :key="item.id"
-            @click="onReplyUser(item)"
+            @click="onReplyComment(item)"
           >
             <avatar
               :url="item.fromUser.avatar"
@@ -62,11 +62,73 @@
                 <text class="comment-date">{{
                   getDateDiff(item.gmtCreate)
                 }}</text>
+
+                <view class="icons-wrap">
+                  <uni-icons
+                    type="trash"
+                    size="20"
+                    color="#111111"
+                    v-if="item.fromAuthorId === $store.state.user.id"
+                    class="edit-icon"
+                    @click.prevent="deleteComment(item.id)"
+                  ></uni-icons>
+
+                  <uni-icons
+                    size="20"
+                    type="heart"
+                    class="edit-icon"
+                    color="#111111"
+                  ></uni-icons>
+                </view>
               </view>
 
               <view class="content"> {{ item.content }} </view>
 
-              <view class="hasSecond" v-if="item.hasSecond">展开</view>
+              <view
+                class="hasSecond"
+                v-if="item.hasSecond"
+                @click.prevent="onCommentListExpand(item.id)"
+                >{{ checkIsExpand(item.id) ? "收起" : "展开" }}</view
+              >
+
+              <view
+                class="secondList"
+                v-if="checkHasSecondList(item.id) && checkIsExpand(item.id)"
+              >
+                <view
+                  class="itemWrap"
+                  v-for="secondItem in secondCommentMap[`${item.id}`].list"
+                  :key="secondItem.id"
+                  @click.prevent="onReplyUser(secondItem, item.id)"
+                >
+                  <view class="comment-header">
+                    <text class="comment-user">{{
+                      genUserNameText(secondItem)
+                    }}</text>
+                    <text class="comment-date">{{
+                      getDateDiff(secondItem.gmtCreate)
+                    }}</text>
+                    <view class="icons-wrap">
+                      <uni-icons
+                        type="trash"
+                        size="20"
+                        color="#111111"
+                        v-if="secondItem.fromAuthorId === $store.state.user.id"
+                        class="edit-icon"
+                      ></uni-icons>
+
+                      <uni-icons
+                        size="20"
+                        type="heart"
+                        class="edit-icon"
+                        color="#111111"
+                      ></uni-icons>
+                    </view>
+                  </view>
+
+                  <view class="content"> {{ secondItem.content }} </view>
+                </view>
+              </view>
             </view>
           </view>
         </view>
@@ -94,7 +156,7 @@
 <script>
 import { postItem } from "./postItem.vue";
 import { getPostDetailById, getPostTopicList } from "@/api/post";
-import { saveComment, getCommentList } from "@/api/comment";
+import { saveComment, getCommentList, deleteCommentById } from "@/api/comment";
 import { Avatar } from "../../components/avatar.vue";
 import { isEmpty } from "lodash";
 import { getDateDiff } from "@/utils/index";
@@ -111,9 +173,10 @@ export default {
       setTopPaymentList: [],
       selectedSetTop: undefined,
       topicList: [],
-      replyCommentId: null,
+      replyUser: null,
       placeholder: "请输入您的想法",
       autofocus: false,
+      secondCommentMap: {},
     };
   },
   computed: {
@@ -142,16 +205,71 @@ export default {
     this.fetchSetTopPaymentList();
   },
   methods: {
+    checkHasSecondList(id) {
+      return this.secondCommentMap[id] && this.secondCommentMap[id].list;
+    },
+    deleteComment(id, isFirst) {
+      deleteCommentById(id).then(({ code, data }) => {
+        this.getPageList();
+        this.secondCommentMap = {};
+      });
+    },
+    checkIsExpand(id) {
+      return this.secondCommentMap[id] && this.secondCommentMap[id].expand;
+    },
+    getSecondList(id) {
+      getCommentList({
+        postId: this.postId,
+        limit: 10,
+        page: 1,
+        repliesId: id,
+      }).then(({ code, data }) => {
+        if (code === 0) {
+          if (data && !isEmpty(data.list)) {
+            this.secondCommentMap[id].list = data.list;
+          }
+        }
+      });
+    },
+    onCommentListExpand(id) {
+      if (!this.secondCommentMap[id]) {
+        this.secondCommentMap[id] = {
+          list: [],
+          expand: true,
+        };
+
+        this.getSecondList(id);
+        return;
+      }
+
+      this.secondCommentMap = {
+        ...this.secondCommentMap,
+        [id]: {
+          ...this.secondCommentMap[id],
+          expand: !this.secondCommentMap[id].expand,
+        },
+      };
+      return;
+    },
     genUserNameText(item) {
       if (!item.toUser) {
         return item.fromUser.username;
       }
       return `${item.fromUser.username} 回复 ${item.toUser.username}`;
     },
-    onReplyUser(item) {
+    onReplyComment(item) {
       this.autofocus = true;
       this.replyUser = {
-        id: item.fromAuthorId,
+        repliesId: item.id,
+        username: item.fromUser.username,
+      };
+      this.placeholder = "请输入您的评论";
+    },
+    onReplyUser(item, parentId) {
+      this.autofocus = true;
+      this.replyUser = {
+        repliesId: parentId,
+        toAuthorId: item.fromAuthorId,
         username: item.fromUser.username,
       };
       this.placeholder = `@${this.replyUser.username}`;
@@ -189,17 +307,20 @@ export default {
       const params = {
         postId: this.postId,
         content: this.commentContent,
-        repliesId: this.replyUser ? this.replyUser.id : 0,
+        repliesId: this.replyUser ? this.replyUser.repliesId : 0,
       };
-      // if (this.replyUser) {
-      // params.toAuthorId = this.replyUser.id;
-      // }
+      if (this.replyUser && this.replyUser.toAuthorId) {
+        params.toAuthorId = this.replyUser.toAuthorId;
+      }
       saveComment(params).then(({ code, data }) => {
         if (code === 0) {
           uni.showToast({
             title: "发布成功",
           });
           this.getPageList();
+          if (this.replyUser && this.replyUser.repliesId) {
+            this.getSecondList(this.replyUser.repliesId);
+          }
           this.closeMask();
         }
       });
@@ -361,6 +482,7 @@ export default {
   align-content: center;
   color: #ccc;
   font-size: 12px;
+  position: relative;
 }
 
 .comment-user {
@@ -439,5 +561,28 @@ export default {
   z-index: 99;
   bottom: 0;
   left: 0;
+}
+
+.hasSecond {
+  text-align: left;
+  padding-left: 20px;
+  color: #5dc588;
+}
+
+.secondList {
+  padding-left: 20px;
+}
+
+.icons-wrap {
+  position: absolute;
+  right: 0;
+  top: -3px;
+  background: white;
+  display: flex;
+  width: 40px;
+}
+
+.edit-icon {
+  margin-right: 4px;
 }
 </style>

@@ -18,3 +18,11 @@ export const getCommentList = function (data) {
     data,
   });
 };
+
+// 删除评论
+export const deleteCommentById = function (id) {
+  return request({
+    url: `postreplies/delete/${id}`,
+    method: "post",
+  });
+};
