@@ -303,7 +303,7 @@ export default {
     likeComment(id, likeState, parentId = "") {
       // 当前是已点赞
       if (likeState) {
-        unlikePost(id).then(({ code }) => {
+        unlikePost({ postRepliesId: id, type: 2 }).then(({ code }) => {
           if (code === 0) {
             if (!parentId) {
               this.changeCommentList(id, false);

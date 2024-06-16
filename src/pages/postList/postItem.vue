@@ -280,11 +280,13 @@ export default {
           .catch((error) => {});
       } else {
         // 取消点赞
-        unlikePost(this.postInfo.id).then(({ code, data }) => {
-          if (code === 0) {
-            this.updateList();
+        unlikePost({ postId: this.postInfo.id, type: 1 }).then(
+          ({ code, data }) => {
+            if (code === 0) {
+              this.updateList();
+            }
           }
-        });
+        );
       }
     },
     subscribe(isSubscribe) {

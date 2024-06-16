@@ -135,6 +135,9 @@ export default {
     changeIsAnonymous(e) {
       this.isAnonymous = e.detail.value;
     },
+    getTitleByContent(text) {
+      return text.slice(0, 80);
+    },
     publish: function () {
       const content = JSON.stringify({
         text: this.postContent,
@@ -142,7 +145,7 @@ export default {
       });
       const data = {
         content,
-        title: "",
+        title: this.getTitleByContent(this.postContent),
         topic: this.topicList[this.index].id,
         visibility: this.rangeIndex + "",
         isAnonymous: this.isAnonymous, // FIXME: 处理是否匿名

@@ -129,10 +129,11 @@ export const likePost = function (data) {
 };
 
 // 取消点赞帖子
-export const unlikePost = function (id) {
+export const unlikePost = function (data) {
   return request({
-    url: `postlikes/delete/${id}`,
+    url: `postlikes/delete`,
     method: "POST",
+    data,
   });
 };
 
@@ -168,6 +169,6 @@ export const queryMyPostList = function () {
     data: {
       limit: 10000,
       page: 1,
-    }
+    },
   });
 };
