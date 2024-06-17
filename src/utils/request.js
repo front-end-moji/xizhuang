@@ -35,7 +35,7 @@ export default class Request {
         }
       } else {
         if (method === "GET") {
-          requestUrl = requestUrl + `?${stringify(data)}`;
+          requestUrl = requestUrl + `${Object.keys(data).length > 0 ? `?${stringify(data)}` : ""}`;
         }
         header = {
           "Content-Type": "application/json",

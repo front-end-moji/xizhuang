@@ -24,7 +24,6 @@
           <view class="wrap">
             <uni-icons type="right" size="18" color="#444444"></uni-icons>
           </view>
-          
         </template>
       </uni-list-item>
     </view>
@@ -46,9 +45,19 @@ export default {
   },
   methods: {
     updateSchool(item) {
-      const { name, id } = item;
-      this.$store.dispatch("updateUser", { school: { name, id } });
-      wx.navigateBack();
+      if (!this.$store.state.user) {
+        uni.showToast({
+          title: "请先登录",
+        });
+      } else if (!this.$store.state.user.school) {
+        const { name, id } = item;
+        this.$store.dispatch("updateUser", { school: { name, id } });
+        wx.navigateBack();
+      } else {
+        uni.showToast({
+          title: "已绑定学校",
+        });
+      }
     },
   },
 };

@@ -107,6 +107,10 @@ export default {
   onLoad: function (option) {
     this.fetchPostTopicList()
   },
+  onPullDownRefresh() {
+    console.warn(111)
+    this.fetchPostTopicList()
+  },
   computed: {
   },
   methods: {
@@ -176,12 +180,12 @@ export default {
         if (code === 0) {
           const list = [{ name: '全部主题', id: 'TOTAL_TOPIC'}, ...data.list]
           this.topicList = list
-          if (!isEmpty(data.list)) {
-            this.activeTab = 'TOTAL_TOPIC';
-            this.fetchPostList()
-            this.fetchRecommendTextList()
-          }
+          this.activeTab = 'TOTAL_TOPIC';
+          this.fetchPostList()
+          this.fetchRecommendTextList()
         }
+      }).finally(() => {
+        uni.stopPullDownRefresh()
       })
     },
     navToPostDetail(id) {

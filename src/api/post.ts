@@ -162,6 +162,7 @@ export const fetchBannerList = function (id) {
   });
 };
 
+// 查询我的帖子列表
 export const queryMyPostList = function () {
   return request({
     url: "user/profile/myPosts",
@@ -170,5 +171,24 @@ export const queryMyPostList = function () {
       limit: 10000,
       page: 1,
     },
+  });
+};
+
+// 查询我的订阅帖子列表
+export const queryMySubscribePostList = function () {
+  return request({
+    url: "user/profile/mySubscribe",
+    method: "GET",
+    data: {
+      limit: 10000,
+      page: 1,
+    },
+  });
+};
+// pv增加
+export const updatePostPv = function (id) {
+  return request({
+    url: `posts/view/${id}`,
+    method: "GET",
   });
 };

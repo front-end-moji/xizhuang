@@ -179,7 +179,7 @@ import { saveComment, getCommentList, deleteCommentById } from "@/api/comment";
 import { Avatar } from "../../components/avatar.vue";
 import { isEmpty } from "lodash";
 import { getDateDiff } from "@/utils/index";
-import { querySetTopPaymentList, getPayParams } from "@/api/post";
+import { querySetTopPaymentList, getPayParams, updatePostPv } from "@/api/post";
 
 export default {
   data() {
@@ -222,6 +222,7 @@ export default {
     this.getPostDetail(id);
     this.getPageList();
     this.fetchSetTopPaymentList();
+    updatePostPv(id);
   },
   methods: {
     checkHasSecondList(id) {

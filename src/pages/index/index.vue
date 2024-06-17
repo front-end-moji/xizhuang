@@ -172,14 +172,9 @@ export default {
         wx.navigateTo({
           url: "/pages/login/index",
         });
-      } else if (!this.$store.state.user.school) {
+      } else  {
         wx.navigateTo({
           url: "/pages/school/index",
-        });
-      } else {
-        uni.showToast({
-          title: "您已绑定学校",
-          duration: 2000,
         });
       }
     },

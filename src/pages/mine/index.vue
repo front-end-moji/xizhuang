@@ -43,7 +43,7 @@
           学生认证
         </view>
         <view>
-          <text v-if="!$store.state.user || $store.state.user.status !== 1 "
+          <text v-if="!$store.state.user || $store.state.user.status !== 1"
             >暂未认证</text
           >
           <text v-else>已认证</text>
@@ -57,6 +57,14 @@
         </view>
         <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
       </view>
+      <view class="listItem" @click="go2MySubscribePost">
+        <view>
+          <uni-icons type="paperclip" size="18" color="#444444"></uni-icons>
+          我的订阅
+        </view>
+        <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
+      </view>
+
       <view class="listItem">
         <view>
           <uni-icons type="cart" size="18" color="#444444"></uni-icons>
@@ -123,13 +131,9 @@ export default {
         uni.showToast({
           title: "请先登录",
         });
-      } else if (!this.$store.state.user.school) {
+      } else {
         wx.navigateTo({
           url: "/pages/school/index",
-        });
-      } else {
-        uni.showToast({
-          title: "已绑定学校",
         });
       }
     },
@@ -155,10 +159,21 @@ export default {
         });
       } else {
         uni.navigateTo({
-          url: "/pages/myPost/index",
+          url: "/pages/myPost/index?type=myPost",
         });
       }
-    }
+    },
+    go2MySubscribePost() {
+      if (!this.$store.state.user) {
+        uni.showToast({
+          title: "请先登录",
+        });
+      } else {
+        uni.navigateTo({
+          url: "/pages/myPost/index?type=subscribe",
+        });
+      }
+    },
   },
 };
 </script>
