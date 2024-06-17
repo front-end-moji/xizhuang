@@ -55,7 +55,9 @@
             mode="widthFit"
             @tap="previewImage(index)"
           />
-          <view class="mask" v-if="index === 2">+{{ images.length - 3 }}</view>
+          <view class="mask" v-if="index === 2 && images.length > 3"
+            >+{{ images.length - 3 }}</view
+          >
         </view>
       </view>
 
@@ -167,8 +169,8 @@ export default {
     },
     repliesNum() {
       if (this.postInfo) {
-        if (this.postInfo.repliesNum) {
-          return this.postInfo.repliesNum;
+        if (this.postInfo.repliesCount) {
+          return this.postInfo.repliesCount;
         }
       }
       return 0;
