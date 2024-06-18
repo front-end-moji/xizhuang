@@ -64,7 +64,7 @@
           @click="navToPostDetail(item.id)"
         >
           <view class="hotLeft">
-            <view class="hotTitle"> 暂无标题 </view>
+            <view class="hotTitle"> {{ getTitle(item) }} </view>
             <view class="desc">
               {{ getPostInfo(item).text }}
             </view>
@@ -109,6 +109,7 @@ export default {
     token() {
       return this.$store.state.token;
     },
+    title(item) {},
   },
   watch: {},
   onLoad: function (option) {
@@ -136,6 +137,14 @@ export default {
     },
     genCreateTime(timestamp) {
       return dayjs(Number(timestamp)).format("YYYY-MM-DD");
+    },
+    getTitle(item) {
+      const text = this.getPostInfo(item).text;
+      if (text.length > 6) {
+        return text.slice(0, 6) + "...";
+      } else {
+        return text;
+      }
     },
     getPostInfo(item) {
       let res = { text: "", media: [] };
@@ -172,7 +181,7 @@ export default {
         wx.navigateTo({
           url: "/pages/login/index",
         });
-      } else  {
+      } else {
         wx.navigateTo({
           url: "/pages/school/index",
         });
