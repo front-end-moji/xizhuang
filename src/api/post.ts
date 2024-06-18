@@ -73,7 +73,7 @@ export const getPostTopicList = function () {
   return request({
     url: `posttopic/page`,
     method: "GET",
-    data: { limit: 10, page: 1 },
+    data: { limit: 10000, page: 1 },
   });
 };
 

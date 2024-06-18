@@ -57,7 +57,12 @@
       </view>
 
       <view class="postWrap">
-        <view class="postContentWrap" v-if="postList.length > 0">
+        <scroll-view
+          :scroll-y="true"
+          class="postContentWrap"
+          @scrolltolower="scrollBottom"
+          v-if="postList.length > 0"
+        >
           <view class="item" v-for="item in postList" :key="item.id">
             <post-item
               :postInfo="item"
@@ -67,7 +72,8 @@
               :isDetail="false"
             ></post-item>
           </view>
-        </view>
+          <uni-load-more :status="loadingMoreStatus"></uni-load-more>
+        </scroll-view>
         <view class="empty-post" v-else> 暂无热帖，抢占沙发啦~ </view>
       </view>
     </view>
@@ -84,8 +90,8 @@
 <script lang="js">
 import postItem from "./postItem.vue";
 import { getPostList, getPostTopicList } from "@/api/post";
-import { isEmpty } from 'lodash'
 import { getPostContentInfo } from "@/utils/index";
+import { shallowReactive } from "vue";
 
 export default {
   data() {
@@ -100,7 +106,12 @@ export default {
       duration: 500,
       recommendList: [],
       postList: [],
-      topicList: []
+      topicList: [],
+      loadingMoreStatus: 'more',
+      pagination: {
+        size: 10,
+        page: 1,
+      }
     };
   },
   components: {postItem},
@@ -115,10 +126,23 @@ export default {
   },
   methods: {
     getPostContentInfo,
+    // 滚动到底部
+    scrollBottom() {
+      if (this.loadingMoreStatus = 'noMore') {
+        return
+      }
+      this.loadingMoreStatus = "loading";
+      this.fetchPostList()
+    },
+    resetPagination() {
+      this.pagination.page = 1
+      this.loadingMoreStatus = 'more'
+    },
     onTabClick(item) {
       if (this.activeTab === item.id) {
         return
       }
+      this.resetPagination()
       this.activeTab = item.id;
       this.fetchPostList({ topic: item.id })
     },
@@ -129,12 +153,14 @@ export default {
     },
     changeViewRange() {
       this.viewRange = this.viewRange === 'ALL' ? 'ONLY' : 'ALL'
+      this.resetPagination()
       this.fetchPostList()
     },
     changeViewType(viewType) {
       if (this.viewType === viewType) {
         return
       }
+      this.resetPagination()
       this.viewType = viewType
       this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0})
     },
@@ -154,11 +180,10 @@ export default {
         .catch((error) => {})
     },
     fetchPostList(params, callback) {
-      const { school } = this.$store.state.user
       let paramsObj = {
         isSearchLatestPost: this.viewType === '最新' ? 1 : 0,
-        limit: 10,
-        page: 1,
+        limit: this.pagination.size,
+        page: this.pagination.page,
         topic: this.activeTab,
         visibility: this.viewRange === 'ALL' ? 1 : 0,
         ...params
@@ -170,13 +195,20 @@ export default {
         .then(({ data, code }) => {
           if (code === 0) {
             const { list } = data;
-            this.postList = list
+            if (list.length === 0) {
+              this.loadingMoreStatus = 'noMore'
+            } else {
+              this.pagination.page = this.pagination.page + 1
+              this.postList = [...this.postList, ...list]
+              this.loadingMoreStatus = 'more'
+            }
           }
         })
         .catch((error) => {});
     },
     fetchPostTopicList() {
       getPostTopicList().then(({ code, data }) => {
+        console.log('%c [ data ]-197', 'font-size:13px; background:pink; color:#bf2c9f;', data)
         if (code === 0) {
           const list = [{ name: '全部主题', id: 'TOTAL_TOPIC'}, ...data.list]
           this.topicList = list
@@ -231,9 +263,16 @@ export default {
 
 .scrollWrap {
   height: calc(100vh - 30px - 52px);
-  overflow-y: auto;
   padding: 0 12px;
   box-sizing: border-box;
+}
+
+.postWrap {
+  height: calc(100% - 64px);
+}
+
+.postContentWrap {
+  height: 100%;
 }
 
 .left {

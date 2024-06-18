@@ -421,16 +421,16 @@ export default {
   align-items: center;
   margin-top: 8px;
   overflow-x: hidden;
-  justify-content: space-between;
 }
 
 .imgItem {
   flex-shrink: 0;
   border-radius: 4px;
-  width: 30%;
+  width: calc(33% - 3px);
   height: 80px;
   overflow: hidden;
   position: relative;
+  margin-right: 3px;
 }
 .imgItem .img {
   height: 100%;

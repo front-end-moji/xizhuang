@@ -328,13 +328,7 @@ export default {
               }
             }
           })
-          .catch((error) => {
-            console.log(
-              "%c [ error ]-322",
-              "font-size:13px; background:pink; color:#bf2c9f;",
-              error
-            );
-          });
+          .catch((error) => {});
       }
     },
     checkIsExpand(id) {
@@ -343,7 +337,7 @@ export default {
     getSecondList(id) {
       getCommentList({
         postId: this.postId,
-        limit: 10,
+        limit: 10000,
         page: 1,
         repliesId: id,
       }).then(({ code, data }) => {
@@ -415,7 +409,7 @@ export default {
     getPageList() {
       getCommentList({
         postId: this.postId,
-        limit: 10,
+        limit: 10000,
         page: 1,
         repliesId: 0,
       }).then(({ code, data }) => {
