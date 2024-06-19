@@ -91,6 +91,7 @@ import { uniForms } from "@dcloudio/uni-ui/lib/uni-forms/uni-forms.vue";
 import { POST_RANGE_LIST } from "./constant";
 import { publishPostReq } from "../../api/post";
 import { getPostTopicList } from "@/api/post";
+import { type } from "@dcloudio/uni-ui/lib/uni-forms/utils";
 
 export default {
   data() {
@@ -181,8 +182,51 @@ export default {
       this.rangeIndex = e.detail.value;
     },
     uploadImgSelect(res) {
-      this.imgList.push(res);
-      this.uploadImg(res.tempFilePaths);
+      console.log(
+        "%c [ res ]-185",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        res
+      );
+      const { tempFiles, tempFilePaths } = res;
+      const newFilesList = [];
+      const newFilePaths = [];
+
+      const MAX_BITE = 1 * 1024 * 1024; // 最大不超过11MB
+      let hasShowToast = false;
+      res.tempFiles.forEach((item, index) => {
+        const { size } = item;
+        if (size > MAX_BITE && !hasShowToast) {
+          uni.showToast({
+            title: "图片不可超过11MB",
+            icon: "error",
+          });
+          hasShowToast = true;
+        } else {
+          newFilePaths.push(tempFilePaths[index]);
+          newFilesList.push(item);
+        }
+      });
+      // console.log(
+      //   "%c [ res ]-185",
+      //   "font-size:13px; background:pink; color:#bf2c9f;",
+      //   res
+      // );
+      // this.imgList.push({
+      //   tempFiles: newFilesList,
+      //   tempFilePaths: newFilePaths,
+      // });
+      const newData = {
+        // ...res,
+        tempFiles: newFilesList,
+        tempFilePaths: newFilePaths,
+      };
+      console.log(
+        "%c [ newData ]-219",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        newData
+      );
+      this.imgList = newData;
+      // this.uploadImg(newFilePaths);
     },
     uploadVideoSelect(res) {
       this.uploading = true;
@@ -194,23 +238,58 @@ export default {
       this.uploadImg(res.tempFilePaths);
     },
     uploadImg(tempFilePaths) {
-      uni.uploadFile({
-        url: "https://www.dqxyq.com/api/oss/upload",
-        filePath: tempFilePaths[0],
-        name: "file",
-        header: {
-          token: this.$store.state.token,
-        },
-        success: (res) => {
-          this.uploading = false;
-          uni.hideLoading();
-          const src = JSON.parse(res.data).data;
-          this.postImgSrc.push(src);
-          const isVideo = this.isVideo(src);
-          if (isVideo) {
-            this.videoSrc = src;
-          }
-        },
+      this.uploading = true;
+      uni.showLoading({
+        title: "视频上传中",
+        mask: true,
+      });
+      const promises = tempFilePaths.map((item, index) => {
+        return new Promise((resolve, reject) => {
+          uni.uploadFile({
+            url: "https://www.dqxyq.com/api/oss/upload",
+            filePath: tempFilePaths[index],
+            name: "file",
+            header: {
+              token: this.$store.state.token,
+            },
+            success: (res) => {
+              resolve(res);
+              // this.uploading = false;
+              // uni.hideLoading();
+              // const src = JSON.parse(res.data).data;
+              // this.postImgSrc.push(src);
+              // const isVideo = this.isVideo(src);
+              // if (isVideo) {
+              //   this.videoSrc = src;
+              // }
+            },
+            fail: (error) => {
+              reject(error);
+            },
+          });
+        });
+      });
+
+      console.log("promises", promises);
+      Promise.all(promises).then((value) => {
+        this.uploading = false;
+        uni.hideLoading();
+
+        value.map((item) => {
+          const data = JSON.parse(item.data);
+          console.log(
+            "%c [ data ]-264",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            data
+          );
+        });
+
+        // 此时默认所有都是成功的
+        console.log(
+          "%c [ all value ]-233",
+          "font-size:13px; background:pink; color:#bf2c9f;",
+          value
+        );
       });
     },
   },

@@ -129,7 +129,7 @@ import {
   subscribePost,
   unsubscribePost,
 } from "@/api/post";
-import { find } from "lodash";
+import { find, cloneDeep } from "lodash";
 import { getDateDiff, getPostContentInfo } from "@/utils/index";
 
 export default {
@@ -278,11 +278,15 @@ export default {
       });
     },
     onLickClick(isLike) {
+      const newPostInfo = cloneDeep(this.postInfo);
       if (!isLike) {
         likePost({ postId: this.postInfo.id, type: 0 })
           .then(({ code, data }) => {
             if (code === 0) {
-              this.updateList();
+              // this.updateList();
+              newPostInfo.isLike = true;
+
+              this.updateList(newPostInfo);
             }
           })
           .catch((error) => {});
@@ -291,24 +295,28 @@ export default {
         unlikePost({ postId: this.postInfo.id, type: 1 }).then(
           ({ code, data }) => {
             if (code === 0) {
-              this.updateList();
+              newPostInfo.isLike = false;
+              this.updateList(newPostInfo);
             }
           }
         );
       }
     },
     subscribe(isSubscribe) {
+      const newPostInfo = cloneDeep(this.postInfo);
       if (!isSubscribe) {
         subscribePost({ postId: this.postInfo.id }).then(({ code, data }) => {
           if (code === 0) {
-            this.updateList();
+            newPostInfo.isSubscribe = true;
+            this.updateList(newPostInfo);
           }
         });
       } else {
         // 取消点赞
         unsubscribePost(this.postInfo.id).then(({ code, data }) => {
           if (code === 0) {
-            this.updateList();
+            newPostInfo.isSubscribe = false;
+            this.updateList(newPostInfo);
           }
         });
       }

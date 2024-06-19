@@ -59,20 +59,25 @@
       <view class="postWrap">
         <scroll-view
           :scroll-y="true"
+          :scroll-top="scrollTop"
           class="postContentWrap"
           @scrolltolower="scrollBottom"
+          @scroll="scroll"
           v-if="postList.length > 0"
         >
           <view class="item" v-for="item in postList" :key="item.id">
             <post-item
               :postInfo="item"
               :key="item.id"
-              :updateList="fetchPostList"
+              :updateList="updatePostListWhenItemChange"
               :topicList="topicList"
               :isDetail="false"
             ></post-item>
           </view>
-          <uni-load-more :status="loadingMoreStatus"></uni-load-more>
+          <uni-load-more
+            v-if="loadingMoreStatus !== 'noMore'"
+            :status="loadingMoreStatus"
+          ></uni-load-more>
         </scroll-view>
         <view class="empty-post" v-else> 暂无热帖，抢占沙发啦~ </view>
       </view>
@@ -111,7 +116,9 @@ export default {
       pagination: {
         size: 10,
         page: 1,
-      }
+      },
+      scrollTop: 0,
+      currentScrollTop: 0
     };
   },
   components: {postItem},
@@ -126,13 +133,24 @@ export default {
   },
   methods: {
     getPostContentInfo,
+    scroll(e) {
+      this.currentScrollTop = e.detail.scrollTop
+    },
     // 滚动到底部
     scrollBottom() {
-      if (this.loadingMoreStatus = 'noMore') {
+      if (this.loadingMoreStatus === 'noMore') {
         return
       }
       this.loadingMoreStatus = "loading";
-      this.fetchPostList()
+      this.pagination.page = this.pagination.page + 1
+      this.fetchPostList({}, (list) => {
+          if (list.length === 0) {
+            this.loadingMoreStatus = 'noMore'
+          } else {
+            this.postList = [...this.postList, ...list]
+            this.loadingMoreStatus = 'more'
+          }
+      })
     },
     resetPagination() {
       this.pagination.page = 1
@@ -144,7 +162,7 @@ export default {
       }
       this.resetPagination()
       this.activeTab = item.id;
-      this.fetchPostList({ topic: item.id })
+      this.fetchPostList({ topic: item.id }, this.initPostList)
     },
     navToCreatePost: () => {
       uni.redirectTo({
@@ -154,7 +172,7 @@ export default {
     changeViewRange() {
       this.viewRange = this.viewRange === 'ALL' ? 'ONLY' : 'ALL'
       this.resetPagination()
-      this.fetchPostList()
+      this.fetchPostList({}, this.initPostList)
     },
     changeViewType(viewType) {
       if (this.viewType === viewType) {
@@ -162,7 +180,7 @@ export default {
       }
       this.resetPagination()
       this.viewType = viewType
-      this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0})
+      this.fetchPostList({ isSearchLatestPost: viewType === '最新' ? 1 : 0}, (list) => this.postList = list)
     },
     fetchRecommendTextList() {
       const params = {
@@ -194,26 +212,23 @@ export default {
       getPostList(paramsObj)
         .then(({ data, code }) => {
           if (code === 0) {
-            const { list } = data;
-            if (list.length === 0) {
-              this.loadingMoreStatus = 'noMore'
-            } else {
-              this.pagination.page = this.pagination.page + 1
-              this.postList = [...this.postList, ...list]
-              this.loadingMoreStatus = 'more'
-            }
+            callback && callback(data.list)
           }
         })
         .catch((error) => {});
     },
+    initPostList(list) {
+      this.postList = list
+      this.scrollTop = this.currentScrollTop
+      this. $nextTick(() =>{ this.scrollTop = 0 });
+    },
     fetchPostTopicList() {
       getPostTopicList().then(({ code, data }) => {
-        console.log('%c [ data ]-197', 'font-size:13px; background:pink; color:#bf2c9f;', data)
         if (code === 0) {
           const list = [{ name: '全部主题', id: 'TOTAL_TOPIC'}, ...data.list]
           this.topicList = list
           this.activeTab = 'TOTAL_TOPIC';
-          this.fetchPostList()
+          this.fetchPostList({}, this.initPostList)
           this.fetchRecommendTextList()
         }
       }).finally(() => {
@@ -225,6 +240,15 @@ export default {
         url: `/pages/postList/details?id=${id}`,
       });
     },
+    updatePostListWhenItemChange(newPostInfo) {
+      this.postList = this.postList.map((item) => {
+        if (item.id === newPostInfo.id) {
+          return newPostInfo
+        } else {
+          return item
+        }
+      })
+    }
   },
 };
 </script>
