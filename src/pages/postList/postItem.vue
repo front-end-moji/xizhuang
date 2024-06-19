@@ -2,7 +2,10 @@
   <view class="postItem">
     <view class="postHeader">
       <view>
-        <avatar :url="userInfo.avatar || ''"></avatar>
+        <view @click="go2historyPost">
+          <avatar :url="userInfo.avatar || ''" ></avatar>
+        </view>
+        
         <img v-if="isTop" src="/static/top.png" class="top" />
       </view>
 
@@ -207,6 +210,9 @@ export default {
   },
   methods: {
     isVideo(src) {
+      if (!src) {
+        return false;
+      }
       const list = src.split(".");
       const fileType = list[list.length - 1];
       const res = ["mp4", "avi"].includes(fileType);
@@ -307,6 +313,21 @@ export default {
         });
       }
     },
+    go2historyPost() {
+      console.warn(111)
+      if (this.postInfo.isAnonymous) {
+        return;
+      }
+      if (this.postInfo.authorId === this.$store.state.user.id) {
+        uni.navigateTo({
+          url: "/pages/myPost/index?type=myPost",
+        });
+      } else {
+        uni.navigateTo({
+          url: `/pages/myPost/index?type=author&authorId=${this.postInfo.authorId}`
+        });
+      }
+    }
   },
 };
 </script>

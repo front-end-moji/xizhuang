@@ -10,13 +10,18 @@
 </template>
 
 <script>
-import { queryMyPostList, queryMySubscribePostList } from "../../api/post";
+import {
+  queryMyPostList,
+  queryMySubscribePostList,
+  queryHistoryPostList,
+} from "../../api/post";
 import { postItem } from "../postList/postItem.vue";
 export default {
   data() {
     return {
       postList: [],
       type: "myPost",
+      authorId: "",
     };
   },
   components: { postItem },
@@ -31,6 +36,12 @@ export default {
         title: "我的帖子",
       });
       this.getMyPostList();
+    } else if (option.type === "author") {
+      uni.setNavigationBarTitle({
+        title: "查看帖子",
+      });
+      this.authorId = option.authorId;
+      this.getAuthorPostList(option.authorId);
     } else {
       this.getMySubscribePostList();
       uni.setNavigationBarTitle({
@@ -42,6 +53,8 @@ export default {
     refresh() {
       if (this.type === "myPost") {
         this.getMyPostList();
+      } else if (this.type === "author") {
+        this.getAuthorPostList(this.authorId);
       } else {
         this.getMySubscribePostList();
       }
@@ -66,6 +79,21 @@ export default {
         title: "加载中",
       });
       queryMySubscribePostList()
+        .then((res) => {
+          if (res.code === 0) {
+            this.postList = res.data.list;
+          }
+        })
+        .finally(() => {
+          uni.hideLoading();
+          uni.stopPullDownRefresh();
+        });
+    },
+    getAuthorPostList(authorId) {
+      uni.showLoading({
+        title: "加载中",
+      });
+      queryHistoryPostList(authorId)
         .then((res) => {
           if (res.code === 0) {
             this.postList = res.data.list;

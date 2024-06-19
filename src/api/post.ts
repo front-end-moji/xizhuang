@@ -192,3 +192,16 @@ export const updatePostPv = function (id) {
     method: "GET",
   });
 };
+
+export const queryHistoryPostList = function (authorId) {
+  return request({
+    url: "posts/history/page",
+    method: "GET",
+    data: {
+      authorId,
+      limit: 10000,
+      page: 1,
+    }
+  });
+};
+
