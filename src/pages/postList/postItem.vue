@@ -115,7 +115,7 @@
               :color="postInfo && postInfo.isLike ? '#f6aeab' : '#111111'"
             ></uni-icons>
           </button>
-          <view class="count" v-if="!isDetail">({{ likeNum }})</view>
+          <view class="count">({{ likeNum }})</view>
         </view>
       </view>
     </view>
