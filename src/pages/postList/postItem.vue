@@ -115,7 +115,7 @@
               :color="postInfo && postInfo.isLike ? '#f6aeab' : '#111111'"
             ></uni-icons>
           </button>
-          <view class="count">({{ likeNum }})</view>
+          <view class="count" v-if="!isDetail">({{ likeNum }})</view>
         </view>
       </view>
     </view>
@@ -191,11 +191,6 @@ export default {
     likeNum() {
       if (this.postInfo) {
         if (this.postInfo.likeNum) {
-          console.log(
-            "%c [ this.postInfo.likeNum ]-194",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            this.postInfo.likeNum
-          );
           return this.postInfo.likeNum;
         }
       }
