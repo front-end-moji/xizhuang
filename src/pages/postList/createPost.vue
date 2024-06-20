@@ -31,7 +31,6 @@
         file-mediatype="video"
         ref="uploadFileRef"
         limit="1"
-        @progress="progress"
       ></uni-file-picker>
       <view class="imgItem" v-if="videoSrc">
         <video class="img" :src="videoSrc"></video>
@@ -128,6 +127,9 @@ export default {
   mounted() {},
   methods: {
     isVideo(src) {
+      if (!src) {
+        return false;
+      }
       const list = src.split(".");
       const fileType = list[list.length - 1];
       const res = ["mp4", "avi"].includes(fileType);
@@ -182,65 +184,47 @@ export default {
       this.rangeIndex = e.detail.value;
     },
     uploadImgSelect(res) {
-      console.log(
-        "%c [ res ]-185",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        res
-      );
-      const { tempFiles, tempFilePaths } = res;
+      const { tempFilePaths } = res;
       const newFilesList = [];
       const newFilePaths = [];
 
       const MAX_BITE = 1 * 1024 * 1024; // 最大不超过11MB
-      let hasShowToast = false;
+      let needToast = false;
       res.tempFiles.forEach((item, index) => {
         const { size } = item;
-        if (size > MAX_BITE && !hasShowToast) {
-          uni.showToast({
-            title: "图片不可超过11MB",
-            icon: "error",
-          });
-          hasShowToast = true;
+        if (size > MAX_BITE) {
+          needToast = true;
         } else {
           newFilePaths.push(tempFilePaths[index]);
           newFilesList.push(item);
         }
       });
-      // console.log(
-      //   "%c [ res ]-185",
-      //   "font-size:13px; background:pink; color:#bf2c9f;",
-      //   res
-      // );
-      // this.imgList.push({
-      //   tempFiles: newFilesList,
-      //   tempFilePaths: newFilePaths,
-      // });
-      const newData = {
-        // ...res,
-        tempFiles: newFilesList,
-        tempFilePaths: newFilePaths,
-      };
-      console.log(
-        "%c [ newData ]-219",
-        "font-size:13px; background:pink; color:#bf2c9f;",
-        newData
-      );
-      this.imgList = newData;
-      // this.uploadImg(newFilePaths);
+
+      this.imgList = [...this.imgList, ...newFilesList];
+
+      if (newFilePaths.length > 0) {
+        if (needToast) {
+          uni.showToast({
+            title: "文件大于11MB",
+            icon: "error",
+            duration: 500,
+          });
+          setTimeout(() => {
+            this.uploadImg(newFilePaths);
+          }, 500);
+        } else {
+          this.uploadImg(newFilePaths);
+        }
+      }
     },
     uploadVideoSelect(res) {
-      this.uploading = true;
-      uni.showLoading({
-        title: "视频上传中",
-        mask: true,
-      });
       this.videoList.push(res);
       this.uploadImg(res.tempFilePaths);
     },
     uploadImg(tempFilePaths) {
       this.uploading = true;
       uni.showLoading({
-        title: "视频上传中",
+        title: "文件上传中",
         mask: true,
       });
       const promises = tempFilePaths.map((item, index) => {
@@ -254,14 +238,6 @@ export default {
             },
             success: (res) => {
               resolve(res);
-              // this.uploading = false;
-              // uni.hideLoading();
-              // const src = JSON.parse(res.data).data;
-              // this.postImgSrc.push(src);
-              // const isVideo = this.isVideo(src);
-              // if (isVideo) {
-              //   this.videoSrc = src;
-              // }
             },
             fail: (error) => {
               reject(error);
@@ -277,19 +253,20 @@ export default {
 
         value.map((item) => {
           const data = JSON.parse(item.data);
+          if (data.code === 0) {
+            const isVideo = this.isVideo(data.data);
+            if (isVideo) {
+              this.videoSrc = data.data;
+            } else {
+              this.postImgSrc.push(data.data);
+            }
+          }
           console.log(
-            "%c [ data ]-264",
+            "%c [ src ]-264",
             "font-size:13px; background:pink; color:#bf2c9f;",
             data
           );
         });
-
-        // 此时默认所有都是成功的
-        console.log(
-          "%c [ all value ]-233",
-          "font-size:13px; background:pink; color:#bf2c9f;",
-          value
-        );
       });
     },
   },
