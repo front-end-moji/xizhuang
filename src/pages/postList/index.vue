@@ -123,6 +123,8 @@ export default {
   },
   components: {postItem},
   onLoad: function (option) {
+  },
+  onShow: function () {
     this.fetchPostTopicList()
   },
   onPullDownRefresh() {

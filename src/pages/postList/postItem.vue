@@ -3,9 +3,9 @@
     <view class="postHeader">
       <view>
         <view @click="go2historyPost">
-          <avatar :url="userInfo.avatar || ''" ></avatar>
+          <avatar :url="userInfo.avatar || ''"></avatar>
         </view>
-        
+
         <img v-if="isTop" src="/static/top.png" class="top" />
       </view>
 
@@ -47,7 +47,7 @@
       <view class="imgList">
         <view
           class="imgItem"
-          v-for="(item, index) in images.slice(0, 3)"
+          v-for="(item, index) in isDetail ? images : images.slice(0, 3)"
           :key="item"
         >
           <video v-if="isVideo(item)" class="img" :src="item"></video>
@@ -58,7 +58,9 @@
             mode="widthFit"
             @tap="previewImage(index)"
           />
-          <view class="mask" v-if="index === 2 && images.length > 3"
+          <view
+            class="mask"
+            v-if="index === 2 && images.length > 3 && !isDetail"
             >+{{ images.length - 3 }}</view
           >
         </view>
@@ -113,7 +115,7 @@
               :color="postInfo && postInfo.isLike ? '#f6aeab' : '#111111'"
             ></uni-icons>
           </button>
-          <view class="count" v-if="!isDetail">({{ likeNum }})</view>
+          <view class="count">({{ likeNum }})</view>
         </view>
       </view>
     </view>
@@ -189,6 +191,11 @@ export default {
     likeNum() {
       if (this.postInfo) {
         if (this.postInfo.likeNum) {
+          console.log(
+            "%c [ this.postInfo.likeNum ]-194",
+            "font-size:13px; background:pink; color:#bf2c9f;",
+            this.postInfo.likeNum
+          );
           return this.postInfo.likeNum;
         }
       }
@@ -285,7 +292,11 @@ export default {
             if (code === 0) {
               // this.updateList();
               newPostInfo.isLike = true;
-
+              if (!newPostInfo.likeNum) {
+                newPostInfo.likeNum = 1;
+              } else {
+                newPostInfo.likeNum = Number(newPostInfo.likeNum) + 1;
+              }
               this.updateList(newPostInfo);
             }
           })
@@ -295,6 +306,7 @@ export default {
         unlikePost({ postId: this.postInfo.id, type: 1 }).then(
           ({ code, data }) => {
             if (code === 0) {
+              newPostInfo.likeNum = Number(newPostInfo.likeNum) - 1;
               newPostInfo.isLike = false;
               this.updateList(newPostInfo);
             }
@@ -322,7 +334,7 @@ export default {
       }
     },
     go2historyPost() {
-      console.warn(111)
+      console.warn(111);
       if (this.postInfo.isAnonymous) {
         return;
       }
@@ -332,10 +344,10 @@ export default {
         });
       } else {
         uni.navigateTo({
-          url: `/pages/myPost/index?type=author&authorId=${this.postInfo.authorId}`
+          url: `/pages/myPost/index?type=author&authorId=${this.postInfo.authorId}`,
         });
       }
-    }
+    },
   },
 };
 </script>
@@ -450,6 +462,7 @@ export default {
   align-items: center;
   margin-top: 8px;
   overflow-x: hidden;
+  flex-wrap: wrap;
 }
 
 .imgItem {
@@ -460,6 +473,7 @@ export default {
   overflow: hidden;
   position: relative;
   margin-right: 3px;
+  margin-bottom: 6px;
 }
 .imgItem .img {
   height: 100%;
