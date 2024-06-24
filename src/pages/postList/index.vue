@@ -90,6 +90,7 @@
       </view>
     </view>
   </view>
+  <uni-fab ref="fab" :pattern="pattern" :popMenu="false" horizontal="right" @fabClick="refresh" />
 </template>
 
 <script lang="js">
@@ -118,17 +119,24 @@ export default {
         page: 1,
       },
       scrollTop: 0,
-      currentScrollTop: 0
+      currentScrollTop: 0,
+      pattern: {
+        color: '#ffffff',
+        backgroundColor: '#ffffff',
+        selectedColor: '#007AFF',
+        buttonColor: '#ffffff',
+        iconColor: '#000',
+        icon: 'loop'
+      },
     };
   },
   components: {postItem},
   onLoad: function (option) {
-  },
-  onShow: function () {
     this.fetchPostTopicList()
   },
+  onShow: function () {
+  },
   onPullDownRefresh() {
-    console.warn(111)
     this.fetchPostTopicList()
   },
   computed: {
@@ -243,13 +251,9 @@ export default {
       });
     },
     updatePostListWhenItemChange(newPostInfo) {
-      this.postList = this.postList.map((item) => {
-        if (item.id === newPostInfo.id) {
-          return newPostInfo
-        } else {
-          return item
-        }
-      })
+    },
+    refresh() {
+      this.fetchPostList({}, this.initPostList)
     }
   },
 };
