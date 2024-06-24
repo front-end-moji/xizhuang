@@ -253,7 +253,9 @@ export default {
     updatePostListWhenItemChange(newPostInfo) {
     },
     refresh() {
-      this.fetchPostList({}, this.initPostList)
+      this.fetchPostList({page: 1}, this.initPostList)
+      this.pagination.page = 1;
+      this.loadingMoreStatus = 'more';
     }
   },
 };

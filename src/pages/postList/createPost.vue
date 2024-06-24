@@ -19,6 +19,7 @@
         file-mediatype="image"
         ref="uploadFileRef"
         limit="9"
+        @delete="deleteImg"
       ></uni-file-picker>
     </view>
 
@@ -31,6 +32,7 @@
         file-mediatype="video"
         ref="uploadFileRef"
         limit="1"
+        @delete="deleteVideo"
       ></uni-file-picker>
       <view class="imgItem" v-if="videoSrc">
         <video class="img" :src="videoSrc"></video>
@@ -90,7 +92,6 @@ import { uniForms } from "@dcloudio/uni-ui/lib/uni-forms/uni-forms.vue";
 import { POST_RANGE_LIST } from "./constant";
 import { publishPostReq } from "../../api/post";
 import { getPostTopicList } from "@/api/post";
-import { type } from "@dcloudio/uni-ui/lib/uni-forms/utils";
 
 export default {
   data() {
@@ -101,7 +102,7 @@ export default {
       isAnonymous: false,
       rangeList: POST_RANGE_LIST,
       topicList: [],
-      postImgSrc: [],
+      media: [],
       imgList: [],
       videoList: [],
       videoSrc: "",
@@ -144,7 +145,7 @@ export default {
     publish: function () {
       const content = JSON.stringify({
         text: this.postContent,
-        media: this.postImgSrc,
+        media: this.media
       });
       const data = {
         content,
@@ -256,9 +257,12 @@ export default {
           if (data.code === 0) {
             const isVideo = this.isVideo(data.data);
             if (isVideo) {
+              this.media = [data.data];
+              this.imgList = [];
               this.videoSrc = data.data;
             } else {
-              this.postImgSrc.push(data.data);
+              this.media.push(data.data);
+              this.videoList = [];
             }
           }
           console.log(
@@ -268,6 +272,16 @@ export default {
           );
         });
       });
+    },
+    deleteImg(e) {
+      const index = e.index;
+      this.imgList = this.imgList.filter((item, i) => i !== index);
+      this.media = this.media.filter((item, i) => i !== index);
+    },
+    deleteVideo() {
+      this.media = [];
+      this.imgList = [];
+      this.videoList = [];
     },
   },
 };
