@@ -28,7 +28,7 @@
       <view v-if="topicText" class="postTopic">{{ topicText }}</view>
     </view>
 
-    <view class="post-content" :class="{ isDetail: isDetail }">
+    <view class="post-content" :class="{ isDetail: isDetail }" @click="navToPostDetail">
       <view class="textWrapper">
         <view
           class="text"
@@ -50,13 +50,13 @@
           v-for="(item, index) in isDetail ? images : images.slice(0, 3)"
           :key="item"
         >
-          <video v-if="isVideo(item)" class="img" :src="item"></video>
+          <video v-if="isVideo(item)" class="img" :src="item" @click.stop></video>
           <img
             v-else
             class="img"
             :src="item"
             mode="widthFit"
-            @tap="previewImage(index)"
+            @tap.stop="previewImage(index)"
           />
           <view
             class="mask"
@@ -69,7 +69,7 @@
       <view class="actions">
         <view class="action-left">
           <text
-            @click="subscribe(postInfo ? postInfo.isSubscribe : null)"
+            @click.stop="subscribe(postInfo ? postInfo.isSubscribe : null)"
             class="watching"
             >{{ postInfo && postInfo.isSubscribe ? "取消订阅" : "订阅" }}</text
           >
@@ -84,7 +84,7 @@
             v-if="
               isDetail && postInfo && postInfo.authorId === $store.state.user.id
             "
-            @click="fetchDeletePost"
+            @click.stop="fetchDeletePost"
           >
             <uni-icons
               type="trash"
@@ -98,7 +98,7 @@
             <uni-icons type="redo" size="20" color="#111111"></uni-icons>
           </button>
 
-          <button class="shareBtn" v-if="!isDetail" @click="navToPostDetail">
+          <button class="shareBtn" v-if="!isDetail" @click.stop="navToPostDetail">
             <uni-icons
               type="chat"
               size="20"
@@ -108,7 +108,7 @@
           </button>
           <view class="count" v-if="!isDetail">({{ repliesNum }})</view>
 
-          <button class="shareBtn" @click="onLickClick(postInfo.isLike)">
+          <button class="shareBtn" @click.stop="onLickClick(postInfo.isLike)">
             <uni-icons
               :type="postInfo && postInfo.isLike ? 'heart-filled' : 'heart'"
               size="20"
@@ -275,6 +275,9 @@ export default {
       });
     },
     navToPostDetail() {
+      if (this.isDetail) {
+        return;
+      }
       uni.navigateTo({
         url: `/pages/postList/details?id=${this.postInfo.id}`,
       });

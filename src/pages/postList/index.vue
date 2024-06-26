@@ -251,6 +251,13 @@ export default {
       });
     },
     updatePostListWhenItemChange(newPostInfo) {
+      this.postList = this.postList.map((item) => {
+        if (item.id === newPostInfo.id) {
+          return newPostInfo
+        } else {
+          return item
+        }
+      })
     },
     refresh() {
       this.fetchPostList({page: 1}, this.initPostList)
