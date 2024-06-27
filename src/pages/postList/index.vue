@@ -175,7 +175,7 @@ export default {
       this.fetchPostList({ topic: item.id }, this.initPostList)
     },
     navToCreatePost: () => {
-      uni.redirectTo({
+      uni.navigateTo({
         url: "/pages/postList/createPost",
       });
     },
