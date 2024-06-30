@@ -153,7 +153,7 @@
       </view>
     </view>
     <view class="comment-btn-wrap">
-      <uni-icons type="image" size="20" color="#f9d786"></uni-icons>
+      <uni-icons type="chat" size="20" color="#f9d786"></uni-icons>
       <input
         class="commentTextarea"
         :placeholder="placeholder"

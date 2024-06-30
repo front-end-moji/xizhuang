@@ -145,7 +145,7 @@ export default {
     publish: function () {
       const content = JSON.stringify({
         text: this.postContent,
-        media: this.media
+        media: this.media,
       });
       const data = {
         content,
@@ -189,7 +189,7 @@ export default {
       const newFilesList = [];
       const newFilePaths = [];
 
-      const MAX_BITE = 1 * 1024 * 1024; // 最大不超过11MB
+      const MAX_BITE = 11 * 1024 * 1024; // 最大不超过11MB
       let needToast = false;
       res.tempFiles.forEach((item, index) => {
         const { size } = item;
