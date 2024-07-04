@@ -34,7 +34,12 @@
         >
           <swiper-item v-for="item in bannerList" :key="item.url">
             <view class="swiper-item">
-              <img :src="item.url" alt="" class="swiper-img" />
+              <img
+                mode="aspectFill"
+                :src="item.url"
+                alt=""
+                class="swiper-img"
+              />
             </view>
           </swiper-item>
         </swiper>
@@ -78,6 +83,7 @@
                 class="homeImg"
                 :src="getPostInfo(item).media[0] || '../../static/banner.png'"
                 alt=""
+                mode="aspectFill"
               />
             </view>
           </view>
@@ -124,7 +130,7 @@ export default {
       })
         .then(({ data, code }) => {
           if ((code === 0) & !isEmpty(data.list)) {
-            this.postList = data.list;
+            this.postList = data.list.slice(0, 10);
           }
         })
         .catch((error) => {});

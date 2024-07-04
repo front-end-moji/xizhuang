@@ -499,6 +499,10 @@ export default {
   overflow: hidden;
 }
 
+.details-wrap >>> .imgItem {
+  height: 100px !important;
+}
+
 .content-wrap {
   background: white;
   padding: 0 16px;

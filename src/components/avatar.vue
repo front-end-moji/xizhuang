@@ -1,6 +1,6 @@
 <template>
   <view class="wrap" :style="styleObj">
-    <img class="img" :src="url" alt="" />
+    <img class="img" :src="url" alt="" mode="aspectFill" />
   </view>
 </template>
 

@@ -149,7 +149,7 @@ export default {
       });
       const data = {
         content,
-        title: this.getTitleByContent(this.postContent),
+        title: this.postContent ? this.getTitleByContent(this.postContent) : "",
         topic: this.topicList[this.index].id,
         visibility: this.rangeIndex + "",
         isAnonymous: this.isAnonymous, // FIXME: 处理是否匿名
@@ -247,7 +247,6 @@ export default {
         });
       });
 
-      console.log("promises", promises);
       Promise.all(promises).then((value) => {
         this.uploading = false;
         uni.hideLoading();
@@ -265,11 +264,6 @@ export default {
               this.videoList = [];
             }
           }
-          console.log(
-            "%c [ src ]-264",
-            "font-size:13px; background:pink; color:#bf2c9f;",
-            data
-          );
         });
       });
     },

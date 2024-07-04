@@ -28,7 +28,11 @@
       <view v-if="topicText" class="postTopic">{{ topicText }}</view>
     </view>
 
-    <view class="post-content" :class="{ isDetail: isDetail }" @click="navToPostDetail">
+    <view
+      class="post-content"
+      :class="{ isDetail: isDetail }"
+      @click="navToPostDetail"
+    >
       <view class="textWrapper">
         <view
           class="text"
@@ -50,13 +54,18 @@
           v-for="(item, index) in isDetail ? images : images.slice(0, 3)"
           :key="item"
         >
-          <video v-if="isVideo(item)" class="img" :src="item" @click.stop></video>
+          <video
+            v-if="isVideo(item)"
+            class="img"
+            :src="item"
+            @click.stop
+          ></video>
           <img
             v-else
             class="img"
             :src="item"
-            mode="widthFit"
             @tap.stop="previewImage(index)"
+            mode="aspectFill"
           />
           <view
             class="mask"
@@ -98,7 +107,11 @@
             <uni-icons type="redo" size="20" color="#111111"></uni-icons>
           </button>
 
-          <button class="shareBtn" v-if="!isDetail" @click.stop="navToPostDetail">
+          <button
+            class="shareBtn"
+            v-if="!isDetail"
+            @click.stop="navToPostDetail"
+          >
             <uni-icons
               type="chat"
               size="20"
@@ -467,7 +480,7 @@ export default {
   flex-shrink: 0;
   border-radius: 4px;
   width: calc(33% - 3px);
-  height: 80px;
+  height: 100px;
   overflow: hidden;
   position: relative;
   margin-right: 3px;
