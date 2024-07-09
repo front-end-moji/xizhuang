@@ -38,7 +38,6 @@
           class="text"
           id="xxx"
           :class="{ expand: needExpand & !hasExpand }"
-          @click="navToPostDetail"
         >
           {{ postContent }}
         </view>

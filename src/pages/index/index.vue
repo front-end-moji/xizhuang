@@ -80,11 +80,18 @@
           <view class="hotRight">
             <view class="hotImg">
               <img
+                v-if="!isVideo(getPostInfo(item).media[0])"
                 class="homeImg"
                 :src="getPostInfo(item).media[0] || '../../static/banner.png'"
                 alt=""
                 mode="aspectFill"
               />
+              <video
+                v-if="isVideo(getPostInfo(item).media[0])"
+                class="homeImg"
+                :src="getPostInfo(item).media[0]"
+                @click.stop
+              ></video>
             </view>
           </view>
         </view>
@@ -151,6 +158,15 @@ export default {
       } else {
         return text;
       }
+    },
+    isVideo(src) {
+      if (!src) {
+        return false;
+      }
+      const list = src.split(".");
+      const fileType = list[list.length - 1];
+      const res = ["mp4", "avi"].includes(fileType);
+      return res;
     },
     getPostInfo(item) {
       let res = { text: "", media: [] };
