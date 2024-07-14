@@ -79,6 +79,12 @@
         "navigationBarTitleText": "我的帖子",
         "enablePullDownRefresh": true
       }
+    },
+    {
+      "path": "pages/contactUs/index",
+      "style": {
+        "navigationBarTitleText": "联系客服"
+      }
     }
   ],
   "globalStyle": {

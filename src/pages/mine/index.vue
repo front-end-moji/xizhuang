@@ -82,7 +82,7 @@
         </view>
         <uni-icons type="right" size="12" color="#aaaaaa"></uni-icons>
       </view>
-      <view class="listItem">
+      <view class="listItem" @click="go2ContactUs">
         <view>
           <uni-icons type="phone" size="18" color="#444444"></uni-icons>
           联系客服
@@ -162,6 +162,16 @@ export default {
           url: "/pages/myPost/index?type=myPost",
         });
       }
+    },
+    go2ContactUs() {
+      console.log(
+        "%c [  ]-168",
+        "font-size:13px; background:pink; color:#bf2c9f;",
+        111
+      );
+      uni.navigateTo({
+        url: "/pages/contactUs/index",
+      });
     },
     go2MySubscribePost() {
       if (!this.$store.state.user) {
